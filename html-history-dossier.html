@@ -1,0 +1,4314 @@
+<!DOCTYPE html>
+<html lang="vi" class="no-js"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4efe5">
+<title>Lịch sử phát triển HTML — Từ CERN đến Web hôm nay</title>
+<meta name="description" content="Hồ sơ tương tác về lịch sử HTML: đề xuất hypertext của Tim Berners-Lee tại CERN năm 1989, các cột mốc HTML và chuẩn sống của Web ngày nay.">
+<meta property="og:title" content="Lịch sử phát triển HTML — Từ CERN đến Web hôm nay">
+<meta property="og:description" content="Từ một sơ đồ vòng tròn và mũi tên tại CERN đến HTML5 và Living Standard: hành trình của ngôn ngữ đánh dấu định hình Web.">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="vi_VN">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2310202c'/%3E%3Cpath d='M24 20 12 32l12 12M40 20l12 12-12 12' fill='none' stroke='%237be3eb' stroke-width='4'/%3E%3C/svg%3E">
+<script>
+(() => {
+  const root = document.documentElement;
+  root.classList.remove('no-js');
+  root.classList.add('js');
+  let saved = null;
+  try { saved = localStorage.getItem('html-archive-theme'); } catch (error) { /* storage unavailable */ }
+  if (saved !== 'light' && saved !== 'dark') {
+    saved = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  }
+  root.dataset.theme = saved;
+})();
+</script>
+<style>
+/* ============================================================
+   Tokens
+   ============================================================ */
+:root {
+  --paper: #f4efe5;
+  --paper-raised: #fbf8f1;
+  --ink: #10202c;
+  --ink-soft: #4c5a63;
+  --line: #d9d0c1;
+  --line-strong: #b9ab96;
+  --accent: #066b76;
+  --accent-bright: #24b6c3;
+  --accent-wash: #e5f0ee;
+  --amber: #875218;
+  --amber-bright: #c68438;
+  --amber-wash: #f3e7d6;
+  --focus: #8a5318;
+  --grid-line: rgba(16, 32, 44, 0.075);
+  --code-bg: #0f1e29;
+  --code-ink: #f0e9db;
+  --code-soft: #9babb1;
+  --code-tag: #7be3eb;
+  --code-string: #e7ae68;
+  --shadow-paper: 0 30px 70px -48px rgba(16, 32, 44, 0.5);
+  --font-display: "Palatino Linotype", "Iowan Old Style", Palatino, Georgia, "Times New Roman", serif;
+  --font-body: "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "Cascadia Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  --shell: 1180px;
+  --radius: 3px;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --paper: #08141d;
+  --paper-raised: #0d1f2a;
+  --ink: #f1eadc;
+  --ink-soft: #b4c0c4;
+  --line: #223743;
+  --line-strong: #3b5361;
+  --accent: #7be3eb;
+  --accent-bright: #7be3eb;
+  --accent-wash: #0f2c35;
+  --amber: #e7ae68;
+  --amber-bright: #e7ae68;
+  --amber-wash: #2a2013;
+  --focus: #f0b970;
+  --grid-line: rgba(241, 234, 220, 0.06);
+  --code-bg: #050f17;
+  --code-ink: #f1eadc;
+  --code-soft: #9fb0b6;
+  --code-tag: #7be3eb;
+  --code-string: #e7ae68;
+  --shadow-paper: 0 30px 70px -40px rgba(0, 0, 0, 0.85);
+  color-scheme: dark;
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 1.0625rem;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body.dialog-open { overflow: hidden; }
+
+h1, h2, h3, p, figure, blockquote, dl, dd { margin: 0; }
+ul, ol { margin: 0; padding: 0; }
+img, svg { display: block; max-width: 100%; }
+button { font: inherit; color: inherit; }
+code, pre { font-family: var(--font-mono); }
+
+a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+a:hover { color: var(--ink); }
+
+:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--paper);
+}
+
+[hidden] { display: none !important; }
+
+.no-js .js-only { display: none !important; }
+
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 300;
+  padding: 12px 18px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  transform: translateY(-150%);
+  transition: transform 0.2s ease;
+}
+.skip-link:focus { transform: translateY(0); color: var(--paper); }
+
+.shell {
+  width: min(var(--shell), calc(100% - 64px));
+  margin-inline: auto;
+}
+
+section[id] {
+  scroll-margin-top: 96px;
+}
+
+/* ============================================================
+   Header
+   ============================================================ */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+
+.header-inner {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 24px;
+  min-height: 74px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  width: max-content;
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-decoration: none;
+}
+.brand:hover { color: var(--accent); }
+
+.brand-mark {
+  width: 9px;
+  height: 9px;
+  flex: none;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-wash);
+}
+
+.brand-sep {
+  color: var(--accent);
+  margin-inline: 0.35em;
+}
+
+.site-nav {
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+  gap: clamp(12px, 2.2vw, 30px);
+  min-width: 0;
+}
+
+.site-nav a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.site-nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  height: 1px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+.site-nav a:hover { color: var(--ink); }
+.site-nav a:hover::after,
+.site-nav a.is-active::after { transform: scaleX(1); }
+.site-nav a.is-active { color: var(--accent); }
+
+.header-tools { justify-self: end; }
+
+.theme-toggle {
+  width: 42px;
+  height: 42px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
+  background: transparent;
+  color: var(--ink-soft);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.theme-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-wash);
+}
+.theme-icon { width: 18px; height: 18px; }
+.theme-icon--sun { display: none; }
+[data-theme="dark"] .theme-icon--sun { display: block; }
+[data-theme="dark"] .theme-icon--moon { display: none; }
+
+/* ============================================================
+   Hero
+   ============================================================ */
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(64px, 8.5vw, 118px) clamp(70px, 9vw, 126px);
+}
+
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  background-size: 76px 76px;
+  -webkit-mask-image: radial-gradient(ellipse at 74% 48%, #000 0%, transparent 72%);
+  mask-image: radial-gradient(ellipse at 74% 48%, #000 0%, transparent 72%);
+}
+
+.hero-grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1.06fr) minmax(330px, 0.84fr);
+  align-items: center;
+  gap: clamp(38px, 6vw, 88px);
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.67rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.eyebrow::before {
+  content: "";
+  width: 30px;
+  height: 1px;
+  flex: none;
+  background: var(--accent);
+}
+
+.hero h1 {
+  margin-top: 22px;
+  font-family: var(--font-display);
+  font-size: clamp(2.85rem, 6.4vw, 5.35rem);
+  font-weight: 400;
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.hero h1 em {
+  font-style: italic;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.hero-dek {
+  max-width: 57ch;
+  margin-top: 26px;
+  color: var(--ink-soft);
+  font-size: clamp(1rem, 1.35vw, 1.13rem);
+  line-height: 1.72;
+}
+
+.hero-meta {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin-top: 30px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.hero-meta li {
+  display: flex;
+  gap: 7px;
+  align-items: baseline;
+}
+.hero-meta li + li::before {
+  content: "·";
+  color: var(--line-strong);
+  margin-right: 0;
+}
+.hero-meta b {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px;
+  margin-top: 30px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 0 18px;
+  background: var(--ink);
+  color: var(--paper);
+  border: 1px solid var(--ink);
+  border-radius: 2px;
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.button:hover {
+  background: var(--accent);
+  color: var(--paper);
+  border-color: var(--accent);
+}
+.button svg { width: 16px; height: 16px; flex: none; }
+.button .arrow { transition: transform 0.2s ease; }
+.button:hover .arrow { transform: translateX(3px); }
+
+.button--small {
+  min-height: 40px;
+  padding: 0 14px;
+  font-size: 0.71rem;
+}
+
+.button--ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line-strong);
+}
+.button--ghost:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-wash);
+}
+
+.text-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding-block: 4px;
+  color: var(--ink);
+  border-bottom: 1px solid currentColor;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.text-link:hover { color: var(--accent); }
+.text-link span { color: var(--accent); }
+
+.hero-plate {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  justify-self: end;
+  padding: clamp(14px, 2vw, 20px);
+  background: var(--paper-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: 1px;
+  box-shadow:
+    9px 9px 0 -1px var(--paper),
+    9px 9px 0 0 var(--line-strong),
+    var(--shadow-paper);
+}
+
+.plate-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 11px;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.plate-graph {
+  position: relative;
+  padding-block: 6px;
+  border-bottom: 1px solid var(--line);
+  background-image: radial-gradient(var(--line) 1px, transparent 1px);
+  background-size: 19px 19px;
+  background-position: center;
+}
+
+.plate-svg { width: 100%; height: auto; }
+
+.plate-node {
+  fill: var(--paper-raised);
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+}
+.plate-node--accent {
+  fill: var(--accent-wash);
+  stroke: var(--accent);
+}
+.plate-node-label {
+  fill: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-anchor: middle;
+}
+.plate-node-sub {
+  fill: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 7.5px;
+  letter-spacing: 0.02em;
+  text-anchor: middle;
+}
+.plate-link {
+  fill: none;
+  stroke: var(--line-strong);
+  stroke-width: 1.2;
+}
+.plate-link--accent {
+  stroke: var(--accent);
+  stroke-width: 1.5;
+}
+.plate-link--dashed {
+  stroke: var(--amber);
+  stroke-width: 1.2;
+  stroke-dasharray: 5 5;
+}
+.plate-arrow { fill: var(--accent); }
+.plate-arrow--muted { fill: var(--line-strong); }
+.plate-note {
+  fill: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.plate-code {
+  padding-block: 11px;
+  overflow-x: auto;
+  color: var(--ink-soft);
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.5;
+  white-space: nowrap;
+  scrollbar-width: thin;
+}
+
+.plate-caption {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 14px;
+  padding-top: 11px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  line-height: 1.6;
+}
+.plate-caption span:last-child { color: var(--accent); }
+
+.tok-tag { color: var(--accent); }
+.tok-string { color: var(--amber); }
+[data-theme="dark"] .plate-code .tok-tag { color: var(--accent); }
+[data-theme="dark"] .plate-code .tok-string { color: var(--amber); }
+
+/* ============================================================
+   Sections
+   ============================================================ */
+.section {
+  padding-block: clamp(64px, 9vw, 118px);
+  border-top: 1px solid var(--line);
+}
+
+.section-head {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 30px;
+  align-items: start;
+  margin-bottom: clamp(34px, 5vw, 58px);
+}
+
+.record {
+  display: flex;
+  gap: 9px;
+  padding-top: 8px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+.record span:first-child { color: var(--accent); }
+
+.section-head h2 {
+  font-family: var(--font-display);
+  font-size: clamp(2.05rem, 3.8vw, 3.35rem);
+  font-weight: 400;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.lede {
+  max-width: 68ch;
+  margin-top: 17px;
+  color: var(--ink-soft);
+  font-size: 1.02rem;
+  line-height: 1.75;
+}
+
+.section-head .lede { margin-bottom: 0; }
+
+/* Context */
+.context-lede {
+  max-width: 72ch;
+  margin-bottom: 34px;
+  color: var(--ink-soft);
+  font-size: 1.05rem;
+  line-height: 1.78;
+}
+
+.concept-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
+}
+
+.concept {
+  min-width: 0;
+  padding: 26px 26px 30px;
+  border-left: 1px solid var(--line);
+}
+.concept:first-child { border-left: 0; padding-left: 0; }
+.concept:last-child { padding-right: 0; }
+
+.concept-tag {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.concept-term {
+  display: block;
+  font-family: var(--font-display);
+  font-size: clamp(1.45rem, 2.2vw, 1.8rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+
+.concept dd {
+  margin-top: 13px;
+  color: var(--ink-soft);
+  font-size: 0.93rem;
+  line-height: 1.7;
+}
+
+.formula {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px 26px;
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.formula-kicker {
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.formula-line {
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: 0.01em;
+}
+.formula-line strong {
+  margin-right: 3px;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 1.9rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+.formula-line small {
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+}
+
+.note {
+  margin-top: 32px;
+  padding: 22px 24px;
+  background: var(--accent-wash);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+}
+.note-kicker {
+  margin-bottom: 8px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.61rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.note h3 {
+  margin-bottom: 10px;
+  font-size: 1.02rem;
+  font-weight: 700;
+  line-height: 1.45;
+}
+.note ul {
+  padding-left: 1.1em;
+  color: var(--ink-soft);
+  font-size: 0.91rem;
+  line-height: 1.7;
+}
+.note li + li { margin-top: 7px; }
+.note strong { color: var(--ink); }
+
+.note--amber {
+  background: var(--amber-wash);
+  border-left-color: var(--amber);
+}
+.note--amber .note-kicker { color: var(--amber); }
+
+.context-source {
+  margin-top: 18px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  line-height: 1.6;
+}
+
+/* Timeline */
+.timeline-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 26px;
+  margin-bottom: 28px;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 20px;
+}
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+}
+.timeline-hint {
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+}
+
+.badge {
+  display: inline-flex;
+  width: max-content;
+  padding: 4px 7px 3px;
+  border: 1px solid currentColor;
+  border-radius: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+.badge--web {
+  color: var(--amber);
+  background: var(--amber-wash);
+}
+.badge--html {
+  color: var(--accent);
+  background: var(--accent-wash);
+}
+
+.timeline {
+  --rail-pad: 42px;
+  --rail-x: 11px;
+  position: relative;
+  list-style: none;
+  padding-left: var(--rail-pad);
+}
+.timeline::before {
+  content: "";
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  left: var(--rail-x);
+  width: 1px;
+  background: var(--line-strong);
+}
+.timeline-item {
+  position: relative;
+  min-width: 0;
+}
+.timeline-item + .timeline-item { margin-top: 14px; }
+.timeline-item::before {
+  content: "";
+  position: absolute;
+  top: 29px;
+  left: calc(var(--rail-x) - var(--rail-pad) - 5px);
+  width: 11px;
+  height: 11px;
+  background: var(--paper);
+  border: 2px solid var(--accent);
+  border-radius: 50%;
+}
+.timeline-item--web::before { border-color: var(--amber); }
+
+.timeline-card {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  min-width: 0;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  transition: border-color 0.2s ease;
+}
+.timeline-card:hover { border-color: var(--line-strong); }
+.timeline-card:focus-within { border-color: var(--accent); }
+
+.timeline-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px 18px;
+  border-right: 1px solid var(--line);
+}
+.timeline-meta time,
+.timeline-now {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 2.35rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 0.9;
+  letter-spacing: -0.035em;
+}
+.timeline-now { font-size: 1.9rem; font-style: italic; }
+
+.milestone {
+  min-width: 0;
+  padding: 18px 22px 20px;
+}
+.milestone summary {
+  position: relative;
+  display: block;
+  padding-right: 36px;
+  list-style: none;
+  cursor: pointer;
+}
+.milestone summary::-webkit-details-marker { display: none; }
+.milestone summary h3 {
+  font-family: var(--font-display);
+  font-size: 1.36rem;
+  font-weight: 400;
+  line-height: 1.22;
+  letter-spacing: -0.015em;
+}
+.milestone summary:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 4px;
+}
+
+.summary-icon {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  width: 21px;
+  height: 21px;
+  border: 1px solid var(--line-strong);
+}
+.summary-icon::before,
+.summary-icon::after {
+  content: "";
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 50%;
+  height: 1px;
+  background: var(--ink-soft);
+  transition: transform 0.2s ease;
+}
+.summary-icon::after { transform: rotate(90deg); }
+.milestone[open] .summary-icon::after { transform: rotate(90deg) scaleX(0); }
+
+.milestone-body {
+  max-width: 66ch;
+  margin-top: 11px;
+  color: var(--ink-soft);
+  font-size: 0.94rem;
+  line-height: 1.72;
+}
+.milestone-body p + p { margin-top: 9px; }
+.milestone-source {
+  margin-top: 13px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--line);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  line-height: 1.6;
+}
+
+.ext::after {
+  content: "↗";
+  display: inline-block;
+  margin-left: 0.28em;
+  font-size: 0.85em;
+  text-decoration: none;
+}
+
+/* Archive */
+.archive-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.94fr) minmax(0, 1.06fr);
+  gap: clamp(28px, 5vw, 68px);
+  align-items: start;
+}
+
+.archive-figure {
+  padding: clamp(13px, 1.8vw, 17px);
+  background: var(--paper-raised);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-paper);
+}
+.archive-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 11px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.archive-label span:last-child { color: var(--accent); }
+
+.image-frame {
+  display: flex;
+  justify-content: center;
+  padding: clamp(9px, 2vw, 20px);
+  background: #f7f3ea;
+  border: 1px solid #d8cdbc;
+}
+.image-frame img {
+  width: 100%;
+  height: auto;
+  max-width: 512px;
+}
+
+.archive-figure figcaption {
+  margin-top: 12px;
+  color: var(--ink-soft);
+  font-size: 0.73rem;
+  line-height: 1.65;
+}
+.archive-figure figcaption a { color: var(--accent); }
+
+.figure-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  margin-top: 14px;
+}
+.figure-actions .text-link { font-size: 0.71rem; }
+
+.archive-copy { max-width: 66ch; }
+
+.pullquote {
+  margin: 0 0 24px;
+  padding-left: 22px;
+  border-left: 2px solid var(--accent);
+}
+.pullquote p {
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 2.1vw, 1.62rem);
+  line-height: 1.4;
+  letter-spacing: -0.012em;
+}
+.pullquote footer {
+  margin-top: 14px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  line-height: 1.6;
+}
+.pullquote cite { font-style: normal; }
+
+.archive-copy > p {
+  color: var(--ink-soft);
+  font-size: 0.98rem;
+  line-height: 1.75;
+}
+.archive-copy > p + p { margin-top: 16px; }
+
+.note--archive { margin-top: 28px; }
+.note--archive p:last-child {
+  color: var(--ink-soft);
+  font-size: 0.91rem;
+  line-height: 1.7;
+}
+
+/* Structure */
+.structure-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.86fr) minmax(0, 1.14fr);
+  gap: clamp(28px, 5vw, 62px);
+  align-items: start;
+}
+
+.structure-copy > p {
+  max-width: 64ch;
+  color: var(--ink-soft);
+  font-size: 0.98rem;
+  line-height: 1.78;
+}
+.structure-copy > p + p { margin-top: 15px; }
+.structure-copy strong { color: var(--ink); }
+
+.micro-note {
+  display: flex;
+  gap: 10px;
+  max-width: 62ch;
+  margin-top: 24px;
+  padding-left: 12px;
+  border-left: 2px solid var(--accent);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  line-height: 1.65;
+}
+.micro-note span { color: var(--accent); }
+
+.specimen {
+  min-width: 0;
+  background: var(--paper-raised);
+  border: 1px solid var(--line-strong);
+  box-shadow: var(--shadow-paper);
+}
+.specimen-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 16px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.59rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.specimen-head + .specimen-head,
+pre + .specimen-head { border-top: 1px solid var(--line); }
+.specimen-head--result { border-top: 1px solid var(--line); }
+.specimen-head span:last-child { color: var(--accent); }
+
+.specimen pre {
+  margin: 0;
+  padding: 18px 18px 22px;
+  overflow-x: auto;
+  background: var(--code-bg);
+  color: var(--code-ink);
+  font-size: 0.76rem;
+  line-height: 1.8;
+  scrollbar-width: thin;
+}
+.specimen pre code { white-space: pre; }
+.specimen .tok-tag { color: var(--code-tag); }
+.specimen .tok-string { color: var(--code-string); }
+.specimen .tok-attr { color: var(--code-soft); }
+
+.rendered {
+  padding: 22px;
+  background: var(--paper);
+}
+.rendered-title {
+  margin-bottom: 10px;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+.rendered p {
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+/* Quiz */
+.quiz-form { min-width: 0; }
+
+.quiz-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.question {
+  min-width: 0;
+  margin: 0;
+  padding: 20px;
+  background: var(--paper-raised);
+  border: 1px solid var(--line);
+  transition: border-color 0.2s ease;
+}
+.question.is-incomplete { border-color: var(--amber); }
+
+.question legend {
+  padding: 0;
+  color: var(--ink);
+  font-size: 0.98rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.q-index {
+  margin-right: 7px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+}
+
+.options {
+  display: grid;
+  gap: 8px;
+  clear: both;
+  margin-top: 13px;
+}
+.option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 9px 11px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.88rem;
+  line-height: 1.45;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+}
+.option:hover { border-color: var(--line-strong); color: var(--ink); }
+.option input {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  flex: none;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.option:has(input:checked) {
+  color: var(--ink);
+  background: var(--accent-wash);
+  border-color: var(--accent);
+}
+.option:has(input:focus-visible) {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.option--correct {
+  color: var(--ink);
+  background: var(--accent-wash);
+  border-color: var(--accent);
+}
+.option--wrong {
+  color: var(--ink);
+  background: var(--amber-wash);
+  border-color: var(--amber);
+}
+
+.question:disabled .option { cursor: default; opacity: 0.92; }
+.question:disabled .option:hover { border-color: var(--line); }
+.question:disabled .option--correct:hover { border-color: var(--accent); }
+.question:disabled .option--wrong:hover { border-color: var(--amber); }
+
+.feedback {
+  margin-top: 13px;
+  padding: 11px 13px;
+  border-left: 3px solid;
+  font-size: 0.84rem;
+  line-height: 1.62;
+}
+.feedback strong { display: block; margin-bottom: 2px; }
+.feedback--ok {
+  background: var(--accent-wash);
+  border-left-color: var(--accent);
+}
+.feedback--no {
+  background: var(--amber-wash);
+  border-left-color: var(--amber);
+}
+
+.quiz-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px 20px;
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+.quiz-status {
+  max-width: 55ch;
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.55;
+}
+.quiz-status:empty { display: none; }
+.quiz-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.quiz-privacy {
+  margin-top: 12px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  line-height: 1.6;
+}
+.quiz-noscript {
+  margin-top: 16px;
+  padding: 12px 14px;
+  color: var(--ink-soft);
+  border-left: 2px solid var(--amber);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
+/* Sources */
+.sources-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.42fr) minmax(0, 1fr);
+  gap: clamp(24px, 5vw, 64px);
+  align-items: start;
+}
+.sources-intro {
+  max-width: 54ch;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+  line-height: 1.75;
+}
+.source-note {
+  max-width: 54ch;
+  margin-top: 18px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.63rem;
+  line-height: 1.7;
+}
+
+.source-list {
+  list-style: none;
+  border-top: 1px solid var(--line-strong);
+  counter-reset: source;
+}
+.source-list li {
+  counter-increment: source;
+  border-bottom: 1px solid var(--line);
+}
+.source-list a {
+  position: relative;
+  display: block;
+  padding: 15px 0 15px 50px;
+  color: inherit;
+  text-decoration: none;
+}
+.source-list a::before {
+  content: counter(source, decimal-leading-zero);
+  position: absolute;
+  top: 17px;
+  left: 0;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.05em;
+}
+.source-title {
+  display: block;
+  color: var(--ink);
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.source-meta {
+  display: block;
+  margin-top: 2px;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  line-height: 1.55;
+}
+.source-list a:hover .source-title {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* Footer */
+.site-footer {
+  padding-block: 46px 40px;
+  border-top: 1px solid var(--line);
+}
+.footer-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 20px 32px;
+  align-items: start;
+}
+.footer-copy {
+  max-width: 50ch;
+  margin-top: 12px;
+  color: var(--ink-soft);
+  font-size: 0.84rem;
+  line-height: 1.7;
+}
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  font-family: var(--font-mono);
+  font-size: 0.63rem;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+.footer-links a {
+  color: var(--ink-soft);
+  text-decoration: none;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+}
+.footer-links a:hover { color: var(--accent); }
+.footer-legal {
+  grid-column: 1 / -1;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-soft);
+  font-size: 0.7rem;
+  line-height: 1.7;
+}
+
+/* Back to top */
+.to-top {
+  position: fixed;
+  right: max(16px, env(safe-area-inset-right));
+  bottom: max(16px, env(safe-area-inset-bottom));
+  z-index: 90;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  box-shadow: var(--shadow-paper);
+  cursor: pointer;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+.to-top:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-wash);
+}
+.to-top svg { width: 18px; height: 18px; }
+
+/* Lightbox */
+dialog.lightbox {
+  width: min(920px, calc(100vw - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 40px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  color: var(--ink);
+  background: var(--paper-raised);
+  border: 1px solid var(--line-strong);
+  box-shadow: 0 40px 100px -30px rgba(0, 0, 0, 0.65);
+}
+dialog.lightbox::backdrop {
+  background: rgba(4, 12, 18, 0.74);
+  -webkit-backdrop-filter: blur(3px);
+  backdrop-filter: blur(3px);
+}
+.lightbox-inner {
+  display: grid;
+  gap: 14px;
+  padding: clamp(16px, 3vw, 28px);
+}
+.lightbox-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+.lightbox-head h2 {
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 2.4vw, 1.8rem);
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+}
+.lightbox-close {
+  width: 40px;
+  height: 40px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  border-radius: 2px;
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.lightbox-close:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-wash);
+}
+.lightbox-image {
+  display: block;
+  width: 100%;
+  max-width: 820px;
+  height: auto;
+  margin-inline: auto;
+  padding: clamp(8px, 2vw, 16px);
+  background: #f7f3ea;
+  border: 1px solid #d8cdbc;
+}
+.lightbox-caption {
+  color: var(--ink-soft);
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+.lightbox-source {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   Motion
+   ============================================================ */
+.hero-copy > * {
+  animation: rise-in 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.hero-copy > :nth-child(2) { animation-delay: 0.06s; }
+.hero-copy > :nth-child(3) { animation-delay: 0.12s; }
+.hero-copy > :nth-child(4) { animation-delay: 0.18s; }
+.hero-copy > :nth-child(5) { animation-delay: 0.24s; }
+
+.hero-plate {
+  animation: plate-in 0.85s 0.15s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.plate-link--draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-line 1.15s 0.55s ease-out forwards;
+}
+.plate-link--dashed { stroke-dasharray: 5 5; stroke-dashoffset: 0; animation: none; }
+
+.reveal-init {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.reveal-init.is-visible,
+.reveal-init:focus-within {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes plate-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes draw-line {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ============================================================
+   Responsive
+   ============================================================ */
+@media (max-width: 1040px) {
+  .site-nav { gap: 14px; }
+  .site-nav a { font-size: 0.6rem; letter-spacing: 0.07em; }
+  .hero-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(300px, 0.78fr);
+    gap: 44px;
+  }
+}
+
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-plate {
+    justify-self: start;
+    max-width: 570px;
+  }
+  .archive-grid,
+  .structure-grid,
+  .sources-grid {
+    grid-template-columns: 1fr;
+  }
+  .archive-copy { max-width: 72ch; }
+  .sources-intro { max-width: 68ch; }
+  .site-header { position: sticky; }
+  .header-inner {
+    grid-template-columns: 1fr auto;
+    gap: 0 16px;
+    padding-top: 10px;
+  }
+  .site-nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    justify-content: flex-start;
+    gap: 22px;
+    margin-top: 8px;
+    overflow-x: auto;
+    border-top: 1px solid var(--line);
+    scrollbar-width: none;
+  }
+  .site-nav::-webkit-scrollbar { display: none; }
+  .site-nav a { padding-block: 12px; min-height: 42px; font-size: 0.62rem; }
+  section[id] { scroll-margin-top: 122px; }
+}
+
+@media (max-width: 800px) {
+  .section-head {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .record { padding-top: 0; }
+  .concept-list { grid-template-columns: 1fr; }
+  .concept,
+  .concept:first-child,
+  .concept:last-child {
+    padding: 23px 0;
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .concept:first-child { border-top: 0; padding-top: 24px; }
+  .concept:last-child { padding-bottom: 24px; }
+  .quiz-grid { grid-template-columns: 1fr; }
+  .footer-inner { grid-template-columns: 1fr; }
+  .footer-legal { grid-column: auto; }
+}
+
+@media (max-width: 720px) {
+  .shell { width: calc(100% - 32px); }
+  .hero { padding-block: 48px 66px; }
+  .hero h1 { font-size: clamp(2.65rem, 12vw, 4rem); }
+  .hero-dek { margin-top: 20px; }
+  .hero-meta { gap: 8px 16px; font-size: 0.59rem; }
+  .hero-meta li + li::before { display: none; }
+  .hero-actions { align-items: flex-start; gap: 14px 18px; }
+  .hero-plate { box-shadow: 5px 5px 0 -1px var(--paper), 5px 5px 0 0 var(--line-strong), var(--shadow-paper); }
+  .plate-top { font-size: 0.53rem; letter-spacing: 0.06em; }
+  .plate-caption { font-size: 0.55rem; }
+  .timeline {
+    --rail-pad: 28px;
+    --rail-x: 7px;
+  }
+  .timeline-item::before {
+    top: 24px;
+    width: 9px;
+    height: 9px;
+  }
+  .timeline-card { grid-template-columns: 1fr; }
+  .timeline-meta {
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .timeline-meta time { font-size: 1.8rem; }
+  .timeline-now { font-size: 1.45rem; }
+  .timeline-meta .badge { order: 2; }
+  .milestone { padding: 15px 16px 17px; }
+  .milestone summary h3 { font-size: 1.18rem; }
+  .milestone-body { font-size: 0.9rem; }
+  .section { padding-block: 58px; }
+  .section-head { margin-bottom: 32px; }
+  .formula { display: block; }
+  .formula-line { margin-top: 9px; font-size: 0.78rem; }
+  .formula-line strong { font-size: 1.65rem; }
+  .formula-line small { display: block; margin-top: 3px; }
+  .note { padding: 18px 18px; }
+  .figure-actions { align-items: flex-start; flex-direction: column; }
+  .quiz-footer { align-items: flex-start; }
+  .quiz-actions { width: 100%; }
+  .quiz-actions .button { flex: 1; }
+  .quiz-privacy { margin-top: 10px; }
+  .lightbox-head h2 { font-size: 1.2rem; }
+  .to-top { width: 42px; height: 42px; }
+}
+
+@media (max-width: 390px) {
+  .site-nav { gap: 16px; }
+  .site-nav a { font-size: 0.58rem; letter-spacing: 0.05em; }
+  .brand { font-size: 0.66rem; }
+  .hero h1 { font-size: 2.45rem; }
+  .hero-dek { font-size: 0.96rem; }
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .hero-actions .button { width: 100%; }
+  .hero-actions .text-link { width: max-content; }
+  .plate-caption { display: block; }
+  .plate-caption span { display: block; }
+  .plate-caption span:last-child { margin-top: 2px; }
+  .milestone summary { padding-right: 30px; }
+  .timeline-meta .badge { font-size: 0.52rem; }
+  .question { padding: 16px; }
+  .option { font-size: 0.84rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .hero-copy > *,
+  .hero-plate { animation: none; opacity: 1; transform: none; }
+  .plate-link--draw {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .reveal-init { opacity: 1; transform: none; transition: none; }
+}
+/* ============================================================
+   ENRICHED ARCHIVE DIRECTION
+   Dark chapters, paper artifacts, a drawn hypertext field.
+   ============================================================ */
+:root {
+  --void: #07131d;
+  --void-2: #0b1b27;
+  --bone: #f3ede1;
+  --muted-on-dark: #b6c1c5;
+  --line-on-dark: rgba(243, 237, 225, 0.16);
+  --cyan-on-dark: #7be3eb;
+  --amber-on-dark: #f0b970;
+  --focus-dark: #f0b970;
+}
+
+/* Header: the archive bar */
+.site-header {
+  background: var(--void);
+  border-bottom-color: var(--line-on-dark);
+  color: var(--bone);
+}
+.site-header .brand { color: var(--bone); }
+.site-header .brand:hover { color: var(--cyan-on-dark); }
+.site-header .brand-mark {
+  background: var(--cyan-on-dark);
+  box-shadow: 0 0 0 3px rgba(123, 227, 235, 0.12);
+}
+.site-header .site-nav a { color: var(--muted-on-dark); }
+.site-header .site-nav a:hover { color: var(--bone); }
+.site-header .site-nav a.is-active { color: var(--cyan-on-dark); }
+.site-header .site-nav a::after { background: var(--cyan-on-dark); }
+.site-header .theme-toggle {
+  color: var(--muted-on-dark);
+  border-color: var(--line-on-dark);
+}
+.site-header .theme-toggle:hover {
+  color: var(--cyan-on-dark);
+  border-color: var(--cyan-on-dark);
+  background: rgba(123, 227, 235, 0.08);
+}
+.site-header :focus-visible { outline-color: var(--focus-dark); }
+.reading-progress {
+  position: absolute;
+  right: 0;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  overflow: hidden;
+  pointer-events: none;
+}
+.reading-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--cyan-on-dark);
+  transform: scaleX(0);
+  transform-origin: left;
+  will-change: transform;
+}
+
+/* Hero: the reading room after dark */
+.hero--ink {
+  padding-bottom: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background: var(--void);
+  color: var(--bone);
+}
+.hero--ink::before {
+  background-image:
+    linear-gradient(to right, var(--line-on-dark) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line-on-dark) 1px, transparent 1px);
+  background-size: 76px 76px;
+  opacity: 0.9;
+  -webkit-mask-image: radial-gradient(ellipse at 74% 44%, #000 0%, transparent 74%);
+  mask-image: radial-gradient(ellipse at 74% 44%, #000 0%, transparent 74%);
+}
+.hero--ink::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 76% 42%, rgba(123, 227, 235, 0.13), transparent 48%),
+    linear-gradient(180deg, transparent 62%, rgba(7, 19, 29, 0.8));
+}
+.hero--ink .shell { position: relative; z-index: 2; }
+.hero--ink .hero-grid {
+  padding-bottom: clamp(54px, 7vw, 88px);
+  position: relative;
+  z-index: 2;
+}
+.hero--ink .eyebrow { color: var(--muted-on-dark); }
+.hero--ink .eyebrow::before { background: var(--cyan-on-dark); }
+.hero--ink h1 { color: var(--bone); }
+.hero--ink h1 em { color: var(--cyan-on-dark); }
+.hero--ink .hero-dek { color: var(--muted-on-dark); }
+.hero--ink .hero-meta {
+  color: var(--muted-on-dark);
+  border-top-color: var(--line-on-dark);
+}
+.hero--ink .hero-meta b { color: var(--cyan-on-dark); }
+.hero--ink .hero-meta li + li::before { color: var(--line-on-dark); }
+.hero--ink .text-link { color: var(--bone); }
+.hero--ink .text-link:hover { color: var(--cyan-on-dark); }
+.hero--ink .text-link span { color: var(--cyan-on-dark); }
+.hero--ink .button {
+  background: var(--bone);
+  color: var(--void);
+  border-color: var(--bone);
+}
+.hero--ink .button:hover {
+  background: var(--cyan-on-dark);
+  color: var(--void);
+  border-color: var(--cyan-on-dark);
+}
+.hero--ink :focus-visible { outline-color: var(--focus-dark); }
+
+/* A faint hypertext field behind the hero */
+.hero-web {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+  color: var(--line-on-dark);
+  opacity: 0.9;
+}
+.hero-web path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+}
+.hero-web__line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-web 2.8s 0.35s ease-out forwards;
+}
+.hero-web__line--dim { opacity: 0.55; }
+.hero-web__line--accent {
+  stroke: var(--cyan-on-dark);
+  stroke-dasharray: 4 11;
+  stroke-dashoffset: 0;
+  opacity: 0.32;
+  animation: none;
+}
+.hero-web__node {
+  fill: var(--void);
+  stroke: var(--line-on-dark);
+  stroke-width: 1.1;
+}
+.hero-web__node--accent {
+  fill: var(--cyan-on-dark);
+  stroke: var(--cyan-on-dark);
+  opacity: 0.7;
+}
+@keyframes draw-web {
+  to { stroke-dashoffset: 0; }
+}
+.hero-watermark {
+  position: absolute;
+  right: clamp(18px, 4vw, 72px);
+  bottom: clamp(52px, 7vw, 92px);
+  z-index: 0;
+  color: rgba(243, 237, 225, 0.045);
+  font-family: var(--font-display);
+  font-size: clamp(10rem, 24vw, 23rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.08em;
+  line-height: 0.7;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* The paper proposal becomes a physical artifact */
+.hero--ink .hero-plate {
+  --paper: #f4efe5;
+  --paper-raised: #fbf8f1;
+  --ink: #10202c;
+  --ink-soft: #4c5a63;
+  --line: #d9d0c1;
+  --line-strong: #b9ab96;
+  --accent: #066b76;
+  --accent-bright: #24b6c3;
+  --accent-wash: #e5f0ee;
+  --amber: #875218;
+  --amber-wash: #f3e7d6;
+  --focus: #8a5318;
+  color: var(--ink);
+  background: var(--paper-raised);
+  border-color: rgba(243, 237, 225, 0.26);
+  box-shadow:
+    10px 10px 0 -1px var(--void),
+    10px 10px 0 0 rgba(243, 237, 225, 0.2),
+    0 34px 80px -38px rgba(0, 0, 0, 0.9),
+    0 0 70px -24px rgba(123, 227, 235, 0.25);
+}
+.plate-stamp {
+  position: absolute;
+  top: 52px;
+  right: -26px;
+  z-index: 3;
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  color: var(--amber);
+  border: 1.5px solid var(--amber);
+  background: rgba(7, 19, 29, 0.82);
+  font-family: var(--font-mono);
+  font-size: 0.61rem;
+  letter-spacing: 0.14em;
+  line-height: 1.35;
+  text-align: center;
+  transform: rotate(5deg);
+  pointer-events: none;
+}
+.plate-stamp b { font-weight: 700; letter-spacing: 0.18em; }
+.plate-stamp small {
+  font-size: 0.49rem;
+  letter-spacing: 0.2em;
+  opacity: 0.85;
+}
+
+/* A museum strip of dates at the edge of the hero */
+.timeline-strip {
+  position: relative;
+  z-index: 2;
+  border-top: 1px solid var(--line-on-dark);
+  border-bottom: 1px solid var(--line-on-dark);
+  background: rgba(7, 19, 29, 0.58);
+}
+.timeline-strip__inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: min(var(--shell), calc(100% - 64px));
+  margin-inline: auto;
+  padding-block: 13px;
+}
+.timeline-strip__label {
+  flex: none;
+  color: var(--muted-on-dark);
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.timeline-strip__viewport {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 3%, #000 97%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 3%, #000 97%, transparent 100%);
+}
+.timeline-strip__viewport::-webkit-scrollbar { display: none; }
+.timeline-strip__items {
+  display: flex;
+  align-items: center;
+  width: max-content;
+  color: var(--muted-on-dark);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.timeline-strip__items span {
+  position: relative;
+  padding-right: 24px;
+}
+.timeline-strip__items span + span::before {
+  content: "·";
+  margin-right: 24px;
+  color: rgba(243, 237, 225, 0.3);
+}
+.timeline-strip__items b {
+  margin-right: 5px;
+  color: var(--amber-on-dark);
+  font-weight: 600;
+}
+.timeline-strip__end {
+  flex: none;
+  color: var(--cyan-on-dark);
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+}
+
+/* Chapter numerals */
+.record {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 7px;
+  padding-top: 0;
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  line-height: 1.5;
+  text-transform: uppercase;
+}
+.record > span:first-child {
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: clamp(2.3rem, 3.4vw, 3.25rem);
+  font-variant-numeric: tabular-nums;
+  font-weight: 400;
+  letter-spacing: -0.04em;
+  line-height: 0.78;
+}
+.record::after {
+  content: "";
+  width: 28px;
+  height: 1px;
+  background: var(--accent);
+  opacity: 0.7;
+}
+
+/* Context: a little more tactility */
+.concept { transition: background-color 0.2s ease; }
+.concept:hover { background: var(--accent-wash); }
+
+/* The chronology becomes the vault */
+.section--vault {
+  position: relative;
+  overflow: hidden;
+  color: var(--bone);
+  background: var(--void);
+  border-top-color: var(--line-on-dark);
+}
+.section--vault::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--line-on-dark) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line-on-dark) 1px, transparent 1px);
+  background-size: 82px 82px;
+  opacity: 0.5;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 76%);
+  mask-image: radial-gradient(ellipse at 50% 0%, #000 0%, transparent 76%);
+}
+.section--vault::after {
+  content: "";
+  position: absolute;
+  top: -18%;
+  left: 50%;
+  width: 72vw;
+  height: 54vw;
+  z-index: 0;
+  pointer-events: none;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(123, 227, 235, 0.1), transparent 66%);
+}
+.section--vault .shell { position: relative; z-index: 1; }
+.section--vault .record { color: var(--muted-on-dark); }
+.section--vault .record > span:first-child { color: var(--cyan-on-dark); }
+.section--vault .record::after { background: var(--cyan-on-dark); }
+.section--vault h2 { color: var(--bone); }
+.section--vault .lede,
+.section--vault .timeline-hint,
+.section--vault .legend-item { color: var(--muted-on-dark); }
+.section--vault .timeline::before { background: rgba(243, 237, 225, 0.2); }
+.section--vault .timeline-item::before {
+  background: var(--void);
+  border-color: var(--cyan-on-dark);
+}
+.section--vault .timeline-item--web::before { border-color: var(--amber-on-dark); }
+.section--vault .timeline-card {
+  --paper: #f4efe5;
+  --paper-raised: #fbf8f1;
+  --ink: #10202c;
+  --ink-soft: #4c5a63;
+  --line: #d9d0c1;
+  --line-strong: #b9ab96;
+  --accent: #066b76;
+  --accent-bright: #24b6c3;
+  --accent-wash: #e5f0ee;
+  --amber: #875218;
+  --amber-wash: #f3e7d6;
+  --focus: #8a5318;
+  color: var(--ink);
+  background: var(--paper-raised);
+  border-color: rgba(243, 237, 225, 0.2);
+  box-shadow: 0 24px 70px -42px rgba(0, 0, 0, 0.9);
+  transition: border-color 0.2s ease, transform 0.25s ease, box-shadow 0.25s ease;
+}
+.section--vault .timeline-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(123, 227, 235, 0.55);
+  box-shadow:
+    0 28px 60px -36px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(123, 227, 235, 0.1);
+}
+.section--vault .timeline-card:has(details[open]) {
+  border-left: 3px solid var(--accent);
+}
+
+/* Archive: a louder quotation and a closer image */
+.pullquote {
+  position: relative;
+  padding-top: 30px;
+  border-left-color: var(--accent);
+}
+.pullquote::before {
+  content: "“";
+  position: absolute;
+  top: -24px;
+  left: -4px;
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 6.4rem;
+  line-height: 1;
+  opacity: 0.16;
+  pointer-events: none;
+}
+.pullquote p {
+  font-size: clamp(1.45rem, 2.5vw, 1.95rem);
+  line-height: 1.35;
+}
+.image-frame { overflow: hidden; }
+.image-frame img { transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+.archive-figure:hover .image-frame img { transform: scale(1.02); }
+
+/* Quiz: a measured response */
+.quiz-meter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+.quiz-meter__label {
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.quiz-meter__label b { color: var(--accent); font-weight: 700; }
+.quiz-meter__track {
+  display: block;
+  width: min(280px, 40vw);
+  height: 3px;
+  overflow: hidden;
+  background: var(--line);
+}
+#quiz-meter-fill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.quiz-status:not(:empty) {
+  padding: 12px 16px;
+  color: var(--ink);
+  background: var(--accent-wash);
+  border-left: 3px solid var(--accent);
+  font-family: var(--font-display);
+  font-size: 1.28rem;
+  font-weight: 400;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+.quiz-status:not(:empty)::before {
+  content: "Kết quả";
+  display: block;
+  margin-bottom: 5px;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* Sources: the arrow finds the exit */
+.source-list a { padding-right: 30px; }
+.source-list a::after {
+  content: "↗";
+  position: absolute;
+  top: 16px;
+  right: 0;
+  color: var(--accent);
+  opacity: 0;
+  transform: translate(-4px, 4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.source-list a:hover::after { opacity: 1; transform: none; }
+
+/* Footer: the colophon */
+.site-footer {
+  padding-top: 0;
+  color: var(--bone);
+  background: var(--void);
+  border-top-color: var(--line-on-dark);
+}
+.site-footer .brand { color: var(--bone); }
+.site-footer .brand:hover { color: var(--cyan-on-dark); }
+.site-footer .brand-mark {
+  background: var(--cyan-on-dark);
+  box-shadow: 0 0 0 3px rgba(123, 227, 235, 0.12);
+}
+.site-footer .footer-copy { color: var(--muted-on-dark); }
+.site-footer .footer-links a { color: var(--muted-on-dark); }
+.site-footer .footer-links a:hover { color: var(--cyan-on-dark); }
+.site-footer .footer-legal {
+  color: var(--muted-on-dark);
+  border-top-color: var(--line-on-dark);
+}
+.site-footer :focus-visible { outline-color: var(--focus-dark); }
+.footer-mark {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  gap: 0.12em;
+  margin: 0 0 28px;
+  color: rgba(243, 237, 225, 0.16);
+  font-family: var(--font-display);
+  font-size: clamp(3.5rem, 10vw, 8rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.055em;
+  line-height: 0.78;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+}
+.footer-mark span { color: var(--cyan-on-dark); opacity: 0.65; }
+
+/* Focus on dark paper */
+.skip-link:focus {
+  outline: 3px solid var(--focus-dark);
+  outline-offset: 2px;
+}
+
+/* Mobile adjustments for the new layer */
+@media (max-width: 900px) {
+  .site-header .site-nav { border-top-color: var(--line-on-dark); }
+}
+@media (max-width: 760px) {
+  .hero--ink .hero-grid { padding-bottom: 42px; }
+  .hero-watermark { display: none; }
+  .plate-stamp { display: none; }
+  .timeline-strip__inner {
+    width: calc(100% - 32px);
+    padding-block: 12px;
+    gap: 14px;
+  }
+  .timeline-strip__label { display: none; }
+  .timeline-strip__items { font-size: 0.58rem; }
+  .record > span:first-child { font-size: 2.15rem; }
+  .quiz-meter { flex-wrap: wrap; }
+  .quiz-meter__track { width: 100%; flex: 1 1 100%; }
+  .quiz-status:not(:empty) { font-size: 1.1rem; }
+  .footer-mark { font-size: clamp(3rem, 14vw, 5rem); white-space: normal; }
+  .hero-web { opacity: 0.55; }
+}
+@media (max-width: 390px) {
+  .timeline-strip__end { display: none; }
+  .record > span:first-child { font-size: 2rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-web__line { animation: none; stroke-dashoffset: 0; }
+  .image-frame img,
+  .timeline-card,
+  .source-list a::after,
+  #quiz-meter-fill { transition: none; }
+  .archive-figure:hover .image-frame img { transform: none; }
+  .section--vault .timeline-card:hover { transform: none; }
+}
+
+/* ============================================================
+   KINETIC ARCHIVE
+   Pointer/scroll-driven depth, a CSS-3D hypertext lattice,
+   paper artifacts that tilt in space, choreographed reveals.
+   ============================================================ */
+
+/* 1. Scene plumbing ------------------------------------------- */
+.hero--ink {
+  --mx: 0;
+  --my: 0;
+  --hs: 0;
+}
+.section--vault,
+.site-footer {
+  --mx: 0;
+  --my: 0;
+}
+.section--vault { --vs: 0; }
+
+.spotlight {
+  display: block;
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    340px circle at var(--sx, 60%) var(--sy, 30%),
+    rgba(123, 227, 235, 0.13),
+    rgba(123, 227, 235, 0.04) 38%,
+    transparent 68%
+  );
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.spotlight.is-live { opacity: 1; }
+.section--vault .spotlight { z-index: 0; }
+
+.depth-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  perspective: 900px;
+}
+.depth-field i {
+  position: absolute;
+  left: var(--fx);
+  top: var(--fy);
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--cyan-on-dark);
+  opacity: var(--fo, 0.4);
+  transform: translate3d(0, 0, var(--fz, 0px));
+  animation: node-drift var(--fdur, 24s) var(--fd, 0s) ease-in-out infinite alternate;
+  will-change: transform;
+}
+.depth-field i:nth-child(3n) { background: var(--amber-on-dark); }
+@keyframes node-drift {
+  from { transform: translate3d(0, 0, var(--fz)) scale(var(--fs, 1)); }
+  to { transform: translate3d(var(--dx, 12px), var(--dy, -18px), calc(var(--fz) + 90px)) scale(calc(var(--fs, 1) * 1.35)); }
+}
+
+/* 2. Hero depth ------------------------------------------------ */
+.hero--ink .hero-web {
+  transform:
+    translate3d(calc(var(--mx) * -18px), calc(var(--my) * -13px + var(--hs) * -46px), 0);
+}
+.hero--ink .hero-watermark {
+  transform: translate3d(calc(var(--mx) * 34px), calc(var(--my) * 22px + var(--hs) * 62px), 0);
+  animation: wm-breathe 11s ease-in-out infinite;
+}
+@keyframes wm-breathe {
+  0%, 100% { opacity: 0.78; }
+  50% { opacity: 1; }
+}
+.hero--ink .hero-copy {
+  position: relative;
+  transform: translate3d(calc(var(--mx) * 7px), calc(var(--my) * 5px), 0);
+}
+.hero--ink .hero-cue {
+  position: absolute;
+  left: clamp(14px, 2.4vw, 30px);
+  bottom: 134px;
+  z-index: 2;
+  width: 1px;
+  height: 78px;
+  background: linear-gradient(180deg, transparent, var(--line-on-dark));
+  pointer-events: none;
+}
+.hero-cue b {
+  position: absolute;
+  top: 0;
+  left: -2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--cyan-on-dark);
+  box-shadow: 0 0 12px rgba(123, 227, 235, 0.85);
+  animation: cue-run 2.9s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+@keyframes cue-run {
+  0% { transform: translateY(0); opacity: 0; }
+  16% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateY(72px); opacity: 0; }
+}
+
+/* Flowing links in the hypertext field */
+.hero-web__line--accent {
+  animation: dash-flow 3.6s linear infinite;
+}
+.hero-web__node { animation: node-twinkle 5.4s ease-in-out infinite; }
+.hero-web__node:nth-of-type(2n) { animation-duration: 7.2s; animation-delay: -1.8s; }
+.hero-web__node:nth-of-type(3n) { animation-duration: 4.4s; animation-delay: -3.1s; }
+@keyframes dash-flow { to { stroke-dashoffset: -30; } }
+@keyframes node-twinkle {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
+/* 3. The proposal becomes a 3D artifact ------------------------ */
+.hero--ink .hero-grid {
+  perspective: 1250px;
+  transform-style: preserve-3d;
+}
+.plate-stage {
+  position: relative;
+  width: 100%;
+  max-width: 540px;
+  justify-self: end;
+  transform-style: preserve-3d;
+  animation: plate-in-3d 1.05s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.plate-stage::after {
+  content: "";
+  position: absolute;
+  left: 8%;
+  right: -2%;
+  bottom: -34px;
+  height: 46px;
+  background: radial-gradient(ellipse at 46% 50%, rgba(0, 0, 0, 0.6), transparent 72%);
+  filter: blur(13px);
+  opacity: calc(0.55 + var(--hs) * 0.3);
+  transform: translate3d(calc(var(--mx) * 10px), 0, -70px) scaleX(calc(0.94 + var(--hs) * 0.1));
+  pointer-events: none;
+}
+.plate-tilt {
+  position: relative;
+  transform-style: preserve-3d;
+  transform:
+    rotateX(var(--plate-rx, 0deg))
+    rotateY(var(--plate-ry, 0deg))
+    translateZ(calc(var(--hs) * -150px));
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.hero--ink.is-tracking .plate-tilt { transition: none; }
+.hero-plate { animation: none; }
+.hero--ink .hero-plate {
+  transform-style: preserve-3d;
+  transition: box-shadow 0.5s ease;
+}
+.hero--ink .plate-top { transform: translateZ(16px); }
+.hero--ink .plate-graph { transform: translateZ(6px); }
+.hero--ink .plate-code { transform: translateZ(20px); }
+.hero--ink .plate-caption { transform: translateZ(11px); }
+.hero--ink .plate-stamp {
+  transform: rotate(5deg) translateZ(52px);
+  box-shadow: 0 14px 26px -12px rgba(0, 0, 0, 0.7);
+}
+.plate-edge {
+  position: absolute;
+  inset: 0;
+  background: var(--void-2);
+  border: 1px solid rgba(123, 227, 235, 0.24);
+  transform: translateZ(-26px) scale(1.015);
+  pointer-events: none;
+}
+.hero-plate::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: 5;
+  background: radial-gradient(
+    260px 300px at var(--hx, 72%) var(--hy, 18%),
+    rgba(255, 255, 255, 0.6),
+    rgba(255, 255, 255, 0.08) 44%,
+    transparent 70%
+  );
+  opacity: 0.45;
+  transform: translateZ(26px);
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+.hero-plate::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  bottom: -1px;
+  width: 62%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--cyan-on-dark));
+  opacity: 0.5;
+  transform: translateZ(22px);
+  pointer-events: none;
+}
+@keyframes plate-in-3d {
+  from { opacity: 0; transform: translate3d(38px, 30px, -220px) rotateY(-16deg); }
+  to { opacity: 1; transform: none; }
+}
+.plate-link--dashed {
+  animation: dash-flow 2.4s linear infinite;
+}
+
+/* Typewriter on the specimen code line */
+.type-line {
+  display: inline-block;
+  clip-path: inset(0 100% 0 0);
+  animation: type-in 1.85s 0.85s steps(26, end) forwards;
+}
+@keyframes type-in { to { clip-path: inset(0 -2% 0 0); } }
+.type-caret {
+  display: inline-block;
+  width: 0.5em;
+  height: 1em;
+  margin-left: 3px;
+  vertical-align: -0.14em;
+  background: var(--amber);
+  opacity: 0;
+  animation: caret-blink 1.05s 2.75s infinite;
+}
+@keyframes caret-blink {
+  0%, 48% { opacity: 0.9; }
+  49%, 100% { opacity: 0; }
+}
+
+/* 4. The date strip keeps moving ------------------------------- */
+.timeline-strip__viewport { overflow: hidden; }
+.timeline-strip__items { animation: strip-drift 46s linear infinite; }
+.timeline-strip:hover .timeline-strip__items { animation-play-state: paused; }
+.timeline-strip__items span { padding-right: 0; }
+.timeline-strip__items span + span::before { content: none; }
+.timeline-strip__items span::after {
+  content: "·";
+  margin-inline: 12px;
+  color: rgba(243, 237, 225, 0.3);
+}
+.timeline-strip__items b {
+  display: inline-block;
+  transition: transform 0.25s ease, color 0.25s ease;
+}
+.timeline-strip:hover .timeline-strip__items b { color: var(--cyan-on-dark); }
+@keyframes strip-drift { to { transform: translateX(-50%); } }
+
+/* 5. The vault: rotating lattice + rail of light ---------------- */
+.lattice3d {
+  position: absolute;
+  width: var(--lat-size, 220px);
+  height: var(--lat-size, 220px);
+  z-index: 0;
+  perspective: 760px;
+  transform-style: preserve-3d;
+  pointer-events: none;
+  opacity: 0.62;
+}
+.lattice3d--vault {
+  --lat-size: clamp(160px, 19vw, 268px);
+  top: clamp(58px, 8vw, 116px);
+  right: clamp(10px, 5vw, 72px);
+  transform: translate3d(calc(var(--mx) * -16px), calc(var(--my) * -12px + var(--vs) * -34px), 0);
+}
+.lattice3d--footer {
+  --lat-size: clamp(120px, 15vw, 190px);
+  right: clamp(14px, 6vw, 84px);
+  bottom: -18px;
+  opacity: 0.34;
+  --lat-dur: 46s;
+}
+.lattice3d__spin {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  animation: lat-spin var(--lat-dur, 34s) linear infinite;
+}
+.lattice3d__spin--reverse { animation-direction: reverse; }
+@keyframes lat-spin {
+  from { transform: rotateX(-22deg) rotateY(0deg); }
+  to { transform: rotateX(-22deg) rotateY(360deg); }
+}
+.lat-edge,
+.lat-node {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+.lat-edge {
+  width: var(--lat-size);
+  height: 1px;
+  margin-left: calc(var(--lat-size) / -2);
+  background: linear-gradient(90deg, transparent, rgba(123, 227, 235, 0.7) 22%, rgba(123, 227, 235, 0.7) 78%, transparent);
+  background-size: 220% 100%;
+  opacity: 0.5;
+  transform:
+    translate3d(calc(var(--x) * var(--lat-size)), calc(var(--y) * var(--lat-size)), calc(var(--z) * var(--lat-size)))
+    rotateY(var(--ry, 0deg))
+    rotateZ(var(--rz, 0deg));
+}
+.lat-edge--accent {
+  background: linear-gradient(90deg, transparent, rgba(240, 185, 112, 0.75) 30%, rgba(240, 185, 112, 0.75) 70%, transparent);
+  opacity: 0.42;
+}
+.lat-edge--live { animation: lat-flow 4.6s linear infinite; }
+@keyframes lat-flow { to { background-position: -220% 0; } }
+.lat-node {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  border-radius: 50%;
+  background: rgba(123, 227, 235, 0.85);
+  box-shadow: 0 0 9px rgba(123, 227, 235, 0.6);
+  transform: translate3d(calc(var(--x) * var(--lat-size)), calc(var(--y) * var(--lat-size)), calc(var(--z) * var(--lat-size)));
+  animation: lat-twinkle 4.8s ease-in-out infinite;
+}
+.lat-node--accent {
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  background: rgba(240, 185, 112, 0.9);
+  box-shadow: 0 0 12px rgba(240, 185, 112, 0.65);
+}
+.lat-node:nth-of-type(2n) { animation-duration: 6.4s; animation-delay: -2s; }
+.lat-node:nth-of-type(3n) { animation-duration: 3.9s; animation-delay: -1.1s; }
+@keyframes lat-twinkle {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+.section--vault .depth-field { z-index: 0; }
+
+/* The rail fills as you read */
+.timeline::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  left: var(--rail-x);
+  width: 1px;
+  height: calc((100% - 32px) * var(--tl, 0));
+  background: linear-gradient(180deg, var(--cyan-on-dark), var(--amber-on-dark));
+  box-shadow: 0 0 10px rgba(123, 227, 235, 0.55);
+  pointer-events: none;
+}
+.timeline-item { --i: 0; }
+.timeline-item:nth-child(2) { --i: 1; }
+.timeline-item:nth-child(3) { --i: 2; }
+.timeline-item:nth-child(4) { --i: 3; }
+.timeline-item:nth-child(5) { --i: 4; }
+.timeline-item:nth-child(6) { --i: 5; }
+.timeline-item:nth-child(7) { --i: 6; }
+.timeline-item:nth-child(8) { --i: 7; }
+.timeline-item:nth-child(9) { --i: 8; }
+.timeline-item::after {
+  content: "";
+  position: absolute;
+  top: 27px;
+  left: calc(var(--rail-x) - var(--rail-pad) - 7px);
+  width: 15px;
+  height: 15px;
+  border: 1px solid var(--cyan-on-dark);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+}
+.timeline-item.is-passed::after { animation: dot-ping 1s ease-out forwards; }
+.timeline-item.is-passed::before {
+  box-shadow: 0 0 0 4px rgba(123, 227, 235, 0.1), 0 0 14px rgba(123, 227, 235, 0.45);
+  transition: box-shadow 0.5s ease;
+}
+@keyframes dot-ping {
+  from { opacity: 0.8; transform: scale(0.35); }
+  to { opacity: 0; transform: scale(2.3); }
+}
+.timeline-item.card-init .timeline-card {
+  opacity: 0;
+  transform: perspective(900px) rotateY(-9deg) translate3d(26px, 12px, -34px);
+}
+.timeline-item.card-init.is-in .timeline-card {
+  opacity: 1;
+  transform: perspective(900px) rotateY(0deg) translate3d(0, 0, 0);
+  transition:
+    transform 0.68s cubic-bezier(0.22, 1, 0.36, 1) calc(var(--i) * 80ms),
+    opacity 0.6s ease calc(var(--i) * 80ms),
+    border-color 0.2s ease,
+    box-shadow 0.3s ease;
+}
+.section--vault .timeline-card:hover,
+.timeline-item.card-init.is-in .section--vault .timeline-card:hover {
+  transition-delay: 0s;
+  transform: perspective(900px) translateY(-3px) translateZ(16px) rotateX(2deg);
+  box-shadow:
+    0 34px 74px -34px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(123, 227, 235, 0.14),
+    0 0 46px -20px rgba(123, 227, 235, 0.3);
+}
+.milestone[open] .milestone-body {
+  animation: unfold 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes unfold {
+  from { opacity: 0; transform: translateY(-10px); clip-path: inset(0 0 100% 0); }
+  to { opacity: 1; transform: none; clip-path: inset(0 0 0 0); }
+}
+.summary-icon { transition: transform 0.3s ease, color 0.3s ease; }
+.milestone summary:hover .summary-icon { color: var(--accent); }
+
+/* 6. Chapter numerals flip into place -------------------------- */
+.record { perspective: 700px; }
+.record > span:first-child { transform-origin: 50% 82%; }
+.section-head.is-visible .record > span:first-child {
+  animation: numeral-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.section-head.is-visible .record::after { animation: rule-grow 0.7s 0.22s ease-out both; }
+@keyframes numeral-in {
+  0% { opacity: 0; transform: rotateX(-82deg) translateY(16px); }
+  55% { opacity: 1; }
+  100% { opacity: 1; transform: rotateX(0deg) translateY(0); }
+}
+@keyframes rule-grow { from { width: 0; } to { width: 28px; } }
+.section-head.is-visible .eyebrow::before { animation: rule-grow-30 0.8s ease-out both; }
+@keyframes rule-grow-30 { from { width: 0; } to { width: 30px; } }
+
+/* 7. Context: cards with thickness ------------------------------ */
+.concept-list { perspective: 1000px; }
+.concept {
+  transform-style: preserve-3d;
+  transition:
+    background-color 0.2s ease,
+    transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.35s ease;
+}
+.concept:hover {
+  transform: translateZ(18px) translateY(-3px);
+  box-shadow: 0 26px 48px -38px rgba(16, 32, 44, 0.65);
+}
+.concept-term { transition: letter-spacing 0.35s ease, color 0.35s ease; }
+.concept:hover .concept-term { letter-spacing: -0.02em; }
+.formula { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s ease; }
+.formula:hover { transform: translateY(-2px); box-shadow: var(--shadow-paper); }
+.note { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease; }
+.note:hover { transform: translateY(-2px) rotate(-0.2deg); }
+
+/* 8. Archive: pulled from a folder of paper ------------------- */
+.archive-stage {
+  position: relative;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+.archive-stage::before,
+.archive-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--paper-raised);
+  border: 1px solid var(--line-strong);
+  pointer-events: none;
+}
+.archive-stage::before { transform: translate3d(16px, 12px, -34px) rotate(1.5deg); opacity: 0.7; }
+.archive-stage::after { transform: translate3d(-9px, 19px, -18px) rotate(-1.2deg); opacity: 0.8; }
+.archive-figure {
+  position: relative;
+  transform-style: preserve-3d;
+  transform: rotateX(var(--af-rx, 0deg)) rotateY(var(--af-ry, 0deg));
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.6s ease;
+}
+.archive-figure:hover { box-shadow: 0 40px 90px -46px rgba(0, 0, 0, 0.55); }
+.image-frame { position: relative; }
+.image-frame::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 32%;
+  background: linear-gradient(180deg, transparent, rgba(123, 227, 235, 0.2), transparent);
+  opacity: 0;
+  pointer-events: none;
+  animation: scan 10s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+@keyframes scan {
+  0% { transform: translateY(-120%); opacity: 0; }
+  10% { opacity: 0.9; }
+  55% { transform: translateY(330%); opacity: 0.5; }
+  68% { opacity: 0; }
+  100% { transform: translateY(-120%); opacity: 0; }
+}
+.pullquote::before { animation: quote-float 9s ease-in-out infinite; }
+@keyframes quote-float {
+  0%, 100% { transform: translateY(0); opacity: 0.14; }
+  50% { transform: translateY(-7px); opacity: 0.22; }
+}
+
+/* 9. Structure specimen --------------------------------------- */
+.specimen { transition: border-color 0.3s ease, box-shadow 0.4s ease; }
+.specimen:hover { border-color: var(--line-strong); box-shadow: var(--shadow-paper); }
+.specimen pre { position: relative; }
+.specimen pre::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 26px;
+  background: linear-gradient(180deg, transparent, rgba(123, 227, 235, 0.16), transparent);
+  opacity: 0;
+  pointer-events: none;
+  animation: code-sweep 7.5s ease-in-out infinite;
+}
+@keyframes code-sweep {
+  0% { transform: translateY(-10px); opacity: 0; }
+  8% { opacity: 0.85; }
+  40% { transform: translateY(74px); opacity: 0.5; }
+  52% { opacity: 0; }
+  100% { transform: translateY(-10px); opacity: 0; }
+}
+.rendered { transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), border-color 0.3s ease; }
+.specimen:hover .rendered { transform: translateZ(0) translateY(-2px); }
+
+/* 10. Quiz choreography --------------------------------------- */
+.options { perspective: 800px; }
+.option {
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease,
+    transform 0.25s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.25s ease;
+}
+.option:hover { transform: translateZ(10px) translateY(-1px); }
+.option:has(input:checked) { transform: translateZ(14px); box-shadow: 0 10px 24px -20px rgba(0, 0, 0, 0.6); }
+.question:disabled .option { transform: none; box-shadow: none; }
+.option--correct { animation: opt-ok 0.75s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.option--wrong { animation: opt-nope 0.5s ease; }
+@keyframes opt-ok {
+  0% { box-shadow: 0 0 0 0 rgba(6, 107, 118, 0.4); }
+  45% { box-shadow: 0 0 0 7px rgba(6, 107, 118, 0.14); }
+  100% { box-shadow: 0 0 0 3px rgba(6, 107, 118, 0.09); }
+}
+@keyframes opt-nope {
+  0%, 100% { transform: translateX(0); }
+  18% { transform: translateX(-7px); }
+  42% { transform: translateX(6px); }
+  68% { transform: translateX(-3px); }
+}
+[data-theme="dark"] .option--correct { animation-name: opt-ok-dark; }
+@keyframes opt-ok-dark {
+  0% { box-shadow: 0 0 0 0 rgba(123, 227, 235, 0.45); }
+  45% { box-shadow: 0 0 0 7px rgba(123, 227, 235, 0.16); }
+  100% { box-shadow: 0 0 0 3px rgba(123, 227, 235, 0.1); }
+}
+.quiz-status:not(:empty) { animation: result-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes result-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.985); }
+  to { opacity: 1; transform: none; }
+}
+.feedback:not([hidden]) { animation: feedback-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes feedback-in {
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: none; }
+}
+.quiz-meter__track { position: relative; }
+.quiz-meter__track::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+  opacity: 0.5;
+  transform: translateX(-100%);
+  animation: meter-shimmer 2.8s ease-in-out infinite;
+}
+@keyframes meter-shimmer {
+  0%, 60% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* 11. Sources: stacked entry ---------------------------------- */
+.source-list a { transition: transform 0.3s ease, color 0.2s ease; }
+.source-list a:hover { transform: translateX(7px); }
+.sources-grid.is-visible .source-list li { animation: slide-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.sources-grid.is-visible .source-list li:nth-child(1) { animation-delay: 0.04s; }
+.sources-grid.is-visible .source-list li:nth-child(2) { animation-delay: 0.1s; }
+.sources-grid.is-visible .source-list li:nth-child(3) { animation-delay: 0.16s; }
+.sources-grid.is-visible .source-list li:nth-child(4) { animation-delay: 0.22s; }
+.sources-grid.is-visible .source-list li:nth-child(5) { animation-delay: 0.28s; }
+.sources-grid.is-visible .source-list li:nth-child(6) { animation-delay: 0.34s; }
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* 12. Interface chrome ---------------------------------------- */
+.brand-mark { animation: mark-pulse 3.8s ease-in-out infinite; }
+@keyframes mark-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(123, 227, 235, 0.24); }
+  50% { box-shadow: 0 0 0 7px rgba(123, 227, 235, 0); }
+}
+.site-nav a.is-active::after {
+  background: linear-gradient(90deg, var(--cyan-on-dark), rgba(123, 227, 235, 0.3), var(--cyan-on-dark));
+  background-size: 220% 100%;
+  animation: rule-slide 3.4s linear infinite;
+}
+@keyframes rule-slide { to { background-position: -220% 0; } }
+.reading-progress span { background: linear-gradient(90deg, var(--accent), var(--cyan-on-dark), var(--amber-on-dark)); }
+.reading-progress::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc(var(--rp, 0) * 100%);
+  width: 2px;
+  background: var(--bone);
+  box-shadow: 0 0 10px 1px rgba(123, 227, 235, 0.8);
+  opacity: 0.9;
+  pointer-events: none;
+}
+
+.button { position: relative; overflow: hidden; }
+.button::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 45%;
+  background: linear-gradient(100deg, transparent, var(--sheen, rgba(255, 255, 255, 0.6)), transparent);
+  transform: translateX(-150%);
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+.button:hover::after { transform: translateX(255%); }
+.button:active { transform: translateY(1px); }
+.button--ghost { --sheen: rgba(6, 107, 118, 0.2); }
+.text-link span { display: inline-block; transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1); }
+.text-link:hover span { transform: translate(3px, 3px); }
+.button:hover .arrow { transform: translateX(6px); }
+
+.theme-toggle { perspective: 220px; }
+.theme-toggle .theme-icon {
+  grid-area: 1 / 1;
+  display: block;
+  transform-style: preserve-3d;
+  transition: opacity 0.28s ease, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.theme-icon--moon { opacity: 1; transform: rotateX(0deg); }
+.theme-icon--sun { opacity: 0; transform: rotateX(-92deg); }
+[data-theme="dark"] .theme-icon--moon { opacity: 0; transform: rotateX(92deg); }
+[data-theme="dark"] .theme-icon--sun { opacity: 1; transform: rotateX(0deg); }
+.theme-toggle:hover .theme-icon { transform: rotateX(0deg) scale(1.08); }
+
+.to-top:not([hidden]) { animation: fab-in 0.45s cubic-bezier(0.22, 1, 0.36, 1); }
+.to-top { transition: transform 0.25s ease, background 0.2s ease, border-color 0.2s ease; }
+.to-top:hover { transform: translateY(-4px) rotate(-6deg); }
+.to-top:active { transform: translateY(-1px) scale(0.94); }
+@keyframes fab-in {
+  from { opacity: 0; transform: translateY(16px) rotate(-16deg) scale(0.82); }
+  to { opacity: 1; transform: none; }
+}
+
+dialog.lightbox { perspective: 1000px; }
+dialog.lightbox[open] .lightbox-inner {
+  animation: lb-in 0.52s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+dialog.lightbox[open]::backdrop { animation: backdrop-in 0.35s ease both; }
+@keyframes lb-in {
+  from { opacity: 0; transform: rotateX(-10deg) translate3d(0, 30px, -160px) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+
+/* Footer depth */
+.site-footer { position: relative; overflow: hidden; isolation: isolate; }
+.site-footer .footer-inner { position: relative; z-index: 1; }
+.footer-mark span {
+  display: inline-block;
+  animation: arrow-travel 3.6s ease-in-out infinite;
+}
+@keyframes arrow-travel {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(12px); }
+}
+
+/* 13. New-layer responsive ------------------------------------ */
+@media (max-width: 1100px) {
+  .hero--ink .hero-cue { display: none; }
+}
+@media (max-width: 720px) {
+  .timeline-item::after { top: 22px; width: 13px; height: 13px; }
+}
+@media (max-width: 900px) {
+  .plate-stage { justify-self: start; max-width: 570px; }
+  .lattice3d--vault { top: 42px; right: 6px; opacity: 0.42; }
+}
+@media (max-width: 760px) {
+  .depth-field i { animation-duration: 30s; }
+  .hero--ink .plate-top,
+  .hero--ink .plate-graph,
+  .hero--ink .plate-code,
+  .hero--ink .plate-caption,
+  .hero--ink .plate-stamp { transform: none; }
+  .hero-plate::before,
+  .hero-plate::after,
+  .plate-edge { display: none; }
+  .plate-stage::after { display: none; }
+  .archive-stage::before,
+  .archive-stage::after { display: none; }
+  .lattice3d--footer { opacity: 0.22; }
+  .concept:hover { transform: none; }
+}
+
+/* 14. Reduced motion for the kinetic layer --------------------- */
+@media (prefers-reduced-motion: reduce) {
+  .hero--ink .hero-web,
+  .hero--ink .hero-watermark,
+  .hero--ink .hero-copy,
+  .plate-stage,
+  .plate-tilt,
+  .archive-figure,
+  .lattice3d--vault { transform: none; }
+  .plate-stage { animation: none; opacity: 1; }
+  .lattice3d__spin,
+  .lat-edge--live,
+  .lat-node,
+  .depth-field i,
+  .hero-cue b,
+  .brand-mark,
+  .site-nav a.is-active::after,
+  .timeline-strip__items,
+  .pullquote::before,
+  .image-frame::after,
+  .specimen pre::after,
+  .quiz-meter__track::after,
+  .footer-mark span,
+  .type-line,
+  .type-caret,
+  .hero-web__line--accent,
+  .hero-web__node,
+  .plate-link--dashed,
+  .button::after { animation: none; }
+  .type-line { clip-path: none; }
+  .type-caret { opacity: 0.9; }
+  .theme-toggle .theme-icon { transition: none; }
+  .hero-plate::before { opacity: 0.18; }
+  .sources-grid.is-visible .source-list li,
+  .section-head.is-visible .record > span:first-child,
+  .section-head.is-visible .record::after,
+  .section-head.is-visible .eyebrow::before,
+  .milestone[open] .milestone-body,
+  .option--correct,
+  .option--wrong,
+  .quiz-status:not(:empty),
+  .feedback:not([hidden]),
+  .to-top:not([hidden]) { animation: none; }
+  .timeline-item.card-init .timeline-card { opacity: 1; transform: none; }
+}
+</style>
+</head>
+<body id="top">
+<a class="skip-link" href="#noi-dung">Bỏ qua điều hướng, đến nội dung</a>
+
+<header class="site-header">
+  <div class="shell header-inner">
+    <a class="brand" href="#top" aria-label="HTML / Hồ sơ — về đầu trang">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-text">HTML <span class="brand-sep">/</span> HỒ SƠ</span>
+    </a>
+    <nav class="site-nav" aria-label="Mục lục">
+      <a href="#boi-canh">Bối cảnh</a>
+      <a href="#dong-thoi-gian">Dòng thời gian</a>
+      <a href="#tu-lieu">Tư liệu</a>
+      <a href="#kiem-tra">Kiểm tra</a>
+      <a href="#nguon">Nguồn</a>
+    </nav>
+    <div class="header-tools">
+      <button class="theme-toggle js-only" type="button" aria-label="Chuyển sang giao diện tối" title="Chuyển sang giao diện tối">
+        <svg class="theme-icon theme-icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false">
+          <path d="M20.5 14.1A8.5 8.5 0 0 1 9.9 3.5a8.5 8.5 0 1 0 10.6 10.6Z"></path>
+        </svg>
+        <svg class="theme-icon theme-icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="3.6"></circle>
+          <path d="M12 2v2.2M12 19.8V22M4.2 4.2l1.6 1.6M18.2 18.2l1.6 1.6M2 12h2.2M19.8 12H22M4.2 19.8l1.6-1.6M18.2 5.8l1.6-1.6"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+  <div class="reading-progress js-only" aria-hidden="true"><span id="readingProgress"></span></div>
+</header>
+
+<main id="noi-dung">
+  <section class="hero hero--ink" aria-labelledby="hero-title">
+    <svg class="hero-web" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+      <path class="hero-web__line" pathLength="1" d="M-90 660C170 470 420 760 760 610S1180 390 1520 560"></path>
+      <path class="hero-web__line hero-web__line--dim" pathLength="1" d="M-60 170C270 100 510 270 780 210S1210 80 1510 190"></path>
+      <path class="hero-web__line" pathLength="1" d="M230 940C360 700 560 520 790 380S1120 210 1460 270"></path>
+      <path class="hero-web__line hero-web__line--accent" pathLength="1" d="M500 940C590 710 710 570 910 470S1190 420 1460 460"></path>
+      <circle class="hero-web__node" cx="292" cy="566" r="4"></circle>
+      <circle class="hero-web__node" cx="572" cy="454" r="3"></circle>
+      <circle class="hero-web__node hero-web__node--accent" cx="790" cy="380" r="5"></circle>
+      <circle class="hero-web__node" cx="1118" cy="276" r="3"></circle>
+      <circle class="hero-web__node" cx="913" cy="470" r="4"></circle>
+      <circle class="hero-web__node" cx="1228" cy="508" r="3"></circle>
+      <circle class="hero-web__node" cx="455" cy="300" r="2.5"></circle>
+      <circle class="hero-web__node" cx="1320" cy="186" r="2.5"></circle>
+    </svg>
+    <div class="depth-field" aria-hidden="true">
+      <i style="--fx:6%;--fy:22%;--fz:40px;--fs:1.2;--fo:.45;--dx:18px;--dy:-26px;--fdur:22s;--fd:-2s"></i>
+      <i style="--fx:18%;--fy:74%;--fz:120px;--fs:1.7;--fo:.6;--dx:-22px;--dy:-14px;--fdur:27s;--fd:-6s"></i>
+      <i style="--fx:31%;--fy:12%;--fz:200px;--fs:2.1;--fo:.3;--dx:26px;--dy:20px;--fdur:19s;--fd:-11s"></i>
+      <i style="--fx:44%;--fy:58%;--fz:-20px;--fs:1;--fo:.28;--dx:-16px;--dy:24px;--fdur:31s;--fd:-4s"></i>
+      <i style="--fx:57%;--fy:29%;--fz:160px;--fs:1.5;--fo:.5;--dx:20px;--dy:-18px;--fdur:24s;--fd:-14s"></i>
+      <i style="--fx:66%;--fy:82%;--fz:80px;--fs:1.3;--fo:.35;--dx:-24px;--dy:-20px;--fdur:29s;--fd:-8s"></i>
+      <i style="--fx:74%;--fy:16%;--fz:260px;--fs:2.4;--fo:.55;--dx:16px;--dy:26px;--fdur:21s;--fd:-17s"></i>
+      <i style="--fx:83%;--fy:48%;--fz:100px;--fs:1.4;--fo:.4;--dx:-18px;--dy:-24px;--fdur:26s;--fd:-3s"></i>
+      <i style="--fx:92%;--fy:70%;--fz:20px;--fs:1.1;--fo:.3;--dx:22px;--dy:16px;--fdur:33s;--fd:-9s"></i>
+      <i style="--fx:26%;--fy:41%;--fz:220px;--fs:2.2;--fo:.32;--dx:-20px;--dy:18px;--fdur:23s;--fd:-12s"></i>
+      <i style="--fx:62%;--fy:63%;--fz:300px;--fs:2.6;--fo:.25;--dx:24px;--dy:-22px;--fdur:28s;--fd:-7s"></i>
+      <i style="--fx:96%;--fy:31%;--fz:140px;--fs:1.6;--fo:.45;--dx:-26px;--dy:22px;--fdur:25s;--fd:-19s"></i>
+    </div>
+    <span class="spotlight js-only" aria-hidden="true"></span>
+    <span class="hero-watermark" aria-hidden="true">1989</span>
+    <span class="hero-cue" aria-hidden="true"><b></b></span>
+    <div class="shell hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Hồ sơ số 01 · CERN → Web</p>
+        <h1 id="hero-title">HTML: từ <em>một sơ đồ</em> đến cả một web.</h1>
+        <p class="hero-dek">Tháng 3 năm 1989, tại CERN, Tim Berners-Lee phác thảo một hệ thống tài liệu liên kết. Từ đề xuất ấy, HTML ra đời — và trở thành ngôn ngữ định hình cách web được viết.</p>
+        <ul class="hero-meta">
+          <li><b>CERN</b> 03.1989</li>
+          <li><b>HTML Tags</b> 1991</li>
+          <li><b>Living Standard</b> hiện hành</li>
+        </ul>
+        <div class="hero-actions">
+          <a class="button" href="#dong-thoi-gian">
+            Xem dòng thời gian
+            <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" focusable="false">
+              <path d="M4 12h15M13 6l6 6-6 6"></path>
+            </svg>
+          </a>
+          <a class="text-link" href="#tu-lieu">Xem tư liệu gốc <span aria-hidden="true">↘</span></a>
+        </div>
+      </div>
+
+      <div class="plate-stage">
+      <div class="plate-tilt">
+      <figure class="hero-plate">
+        <span class="plate-edge" aria-hidden="true"></span>
+        <div class="plate-top">
+          <span>Hồ sơ CERN–1989–03</span>
+          <span>Hình 01</span>
+        </div>
+        <div class="plate-graph">
+          <svg class="plate-svg" viewBox="0 0 500 352" aria-hidden="true" focusable="false">
+            <defs>
+              <marker id="plate-arrow-accent" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M0 0 10 5 0 10Z" class="plate-arrow"></path>
+              </marker>
+              <marker id="plate-arrow-muted" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+                <path d="M0 0 10 5 0 10Z" class="plate-arrow--muted"></path>
+              </marker>
+            </defs>
+
+            <path class="plate-link plate-link--draw" pathLength="1" d="M137 108 C164 84, 178 76, 207 74" marker-end="url(#plate-arrow-muted)"></path>
+            <path class="plate-link plate-link--accent plate-link--draw" pathLength="1" d="M245 132 C236 161, 226 179, 218 207" marker-end="url(#plate-arrow-accent)"></path>
+            <path class="plate-link plate-link--accent plate-link--draw" pathLength="1" d="M265 252 C303 248, 326 235, 352 221" marker-end="url(#plate-arrow-accent)"></path>
+            <path class="plate-link plate-link--dashed" d="M392 166 C352 106, 242 52, 113 67" marker-end="url(#plate-arrow-muted)"></path>
+
+            <circle class="plate-node" cx="102" cy="119" r="43"></circle>
+            <text class="plate-node-label" x="102" y="118">CERN</text>
+            <text class="plate-node-sub" x="102" y="132">03.1989</text>
+
+            <circle class="plate-node" cx="248" cy="84" r="48"></circle>
+            <text class="plate-node-label" x="248" y="82">ĐỀ XUẤT</text>
+            <text class="plate-node-sub" x="248" y="96">hypertext</text>
+
+            <circle class="plate-node plate-node--accent" cx="216" cy="251" r="43"></circle>
+            <text class="plate-node-label" x="216" y="250">HTML</text>
+            <text class="plate-node-sub" x="216" y="264">cấu trúc</text>
+
+            <circle class="plate-node plate-node--accent" cx="397" cy="198" r="47"></circle>
+            <text class="plate-node-label" x="397" y="196">WEB</text>
+            <text class="plate-node-sub" x="397" y="210">toàn cầu</text>
+
+            <text class="plate-note" x="157" y="70">ý tưởng</text>
+            <text class="plate-note" x="239" y="181">cấu trúc</text>
+            <text class="plate-note" x="303" y="267">liên kết</text>
+            <text class="plate-note" x="273" y="58">một web</text>
+            <text class="plate-note" x="22" y="326">mô phỏng đồ họa · không phải bản gốc</text>
+          </svg>
+        </div>
+        <div class="plate-code" aria-hidden="true"><span class="type-line"><span class="tok-tag">&lt;A HREF=</span><span class="tok-string">"#web"</span><span class="tok-tag">&gt;</span>một liên kết<span class="tok-tag">&lt;/A&gt;</span></span><span class="type-caret"></span></div>
+        <span class="plate-stamp" aria-hidden="true"><b>CERN</b> · 1989<small>PROPOSAL / 03</small></span>
+        <figcaption class="plate-caption">
+          <span>Từ một tài liệu đến một mạng tài liệu liên kết.</span>
+          <span>Bản gốc ở phần Tư liệu ↓</span>
+        </figcaption>
+      </figure>
+      </div>
+      </div>
+    </div>
+
+    <div class="timeline-strip" aria-hidden="true">
+      <div class="timeline-strip__inner">
+        <span class="timeline-strip__label">Dòng thời gian</span>
+        <div class="timeline-strip__viewport">
+          <div class="timeline-strip__items">
+            <span><b>1989</b> CERN</span>
+            <span><b>1991</b> HTML Tags</span>
+            <span><b>1995</b> HTML 2.0</span>
+            <span><b>1997</b> 3.2 / 4.0</span>
+            <span><b>1999</b> 4.01</span>
+            <span><b>2004</b> WHATWG</span>
+            <span><b>2014</b> HTML5</span>
+            <span><b>Nay</b> Living Standard</span>
+            <span><b>1989</b> CERN</span>
+            <span><b>1991</b> HTML Tags</span>
+            <span><b>1995</b> HTML 2.0</span>
+            <span><b>1997</b> 3.2 / 4.0</span>
+            <span><b>1999</b> 4.01</span>
+            <span><b>2004</b> WHATWG</span>
+            <span><b>2014</b> HTML5</span>
+            <span><b>Nay</b> Living Standard</span>
+          </div>
+        </div>
+        <span class="timeline-strip__end">→</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="boi-canh" class="section" aria-labelledby="context-title">
+    <div class="shell">
+      <div class="section-head reveal">
+        <p class="record"><span>01</span> Bối cảnh</p>
+        <div>
+          <h2 id="context-title">Internet, Web, HTML: ba lớp, không phải một.</h2>
+          <p class="lede">Ba thuật ngữ thường được dùng thay nhau. Thực ra chúng mô tả ba tầng khác nhau của cùng một hệ sinh thái — từ hạ tầng mạng đến ngôn ngữ tạo nên trang.</p>
+        </div>
+      </div>
+
+      <p class="context-lede">Tại CERN, hàng nghìn nhà khoa học làm việc trên những hệ thống phức tạp, với tài liệu nằm rải rác trên nhiều loại máy tính. Tim Berners-Lee muốn một cách thống nhất để lưu, liên kết và chia sẻ chúng. Đề xuất của ông không phải là Internet, cũng không chỉ là một ngôn ngữ: đó là một hệ thống thông tin được dựng trên nền Internet.</p>
+
+      <dl class="concept-list reveal">
+        <div class="concept">
+          <dt>
+            <span class="concept-tag">Hạ tầng</span>
+            <span class="concept-term">Internet</span>
+          </dt>
+          <dd>Mạng lưới toàn cầu của các mạng máy tính, kết nối bằng giao thức TCP/IP. Internet chuyên chở email, cuộc gọi video, Web — và nhiều dịch vụ khác. Web không phải Internet.</dd>
+        </div>
+        <div class="concept">
+          <dt>
+            <span class="concept-tag">Hệ thống</span>
+            <span class="concept-term">World Wide Web</span>
+          </dt>
+          <dd>Hệ thống thông tin gồm các tài liệu được định danh bằng URL, liên kết với nhau bằng hyperlink, truyền qua HTTP và hiển thị bằng trình duyệt. Berners-Lee đề xuất Web tại CERN năm 1989.</dd>
+        </div>
+        <div class="concept">
+          <dt>
+            <span class="concept-tag">Ngôn ngữ</span>
+            <span class="concept-term">HTML</span>
+          </dt>
+          <dd>Ngôn ngữ đánh dấu mô tả cấu trúc và ý nghĩa của nội dung: tiêu đề, đoạn văn, danh sách, liên kết, hình ảnh. HTML không phải ngôn ngữ lập trình, cũng không phải hạ tầng mạng.</dd>
+        </div>
+      </dl>
+
+      <div class="formula">
+        <span class="formula-kicker">Một cách nhìn ngắn</span>
+        <p class="formula-line"><strong>Web</strong> = HTML + URL + HTTP <small>trên nền Internet</small></p>
+      </div>
+
+      <aside class="note" aria-labelledby="context-note-title">
+        <p class="note-kicker">Đính chính nhanh</p>
+        <h3 id="context-note-title">Hai điều dễ nhầm.</h3>
+        <ul>
+          <li><strong>Berners-Lee không phát minh ra Internet.</strong> Ông đề xuất Web — một hệ thống thông tin chạy trên Internet.</li>
+          <li><strong>HTML5 không phải điểm kết thúc.</strong> Cột mốc 2014 mở đường cho HTML tiếp tục phát triển theo Living Standard.</li>
+        </ul>
+      </aside>
+
+      <p class="context-source">Bối cảnh lịch sử: <a class="ext" href="https://home.cern/science/computing/the-birth-of-the-web/short-history-web/" target="_blank" rel="noopener noreferrer">CERN — A short history of the Web</a>.</p>
+    </div>
+  </section>
+
+  <section id="dong-thoi-gian" class="section section--vault" aria-labelledby="timeline-title">
+    <div class="lattice3d lattice3d--vault" aria-hidden="true">
+      <div class="lattice3d__spin">
+        <i class="lat-edge lat-edge--live" style="--x:0;--y:-0.5;--z:-0.5"></i>
+        <i class="lat-edge" style="--x:0;--y:-0.5;--z:0.5"></i>
+        <i class="lat-edge" style="--x:0;--y:0.5;--z:-0.5"></i>
+        <i class="lat-edge lat-edge--live" style="--x:0;--y:0.5;--z:0.5"></i>
+        <i class="lat-edge" style="--x:-0.5;--y:0;--z:-0.5;--rz:90deg"></i>
+        <i class="lat-edge lat-edge--accent" style="--x:-0.5;--y:0;--z:0.5;--rz:90deg"></i>
+        <i class="lat-edge" style="--x:0.5;--y:0;--z:-0.5;--rz:90deg"></i>
+        <i class="lat-edge" style="--x:0.5;--y:0;--z:0.5;--rz:90deg"></i>
+        <i class="lat-edge lat-edge--accent" style="--x:-0.5;--y:-0.5;--z:0;--ry:90deg"></i>
+        <i class="lat-edge" style="--x:-0.5;--y:0.5;--z:0;--ry:90deg"></i>
+        <i class="lat-edge" style="--x:0.5;--y:-0.5;--z:0;--ry:90deg"></i>
+        <i class="lat-edge lat-edge--live" style="--x:0.5;--y:0.5;--z:0;--ry:90deg"></i>
+        <i class="lat-node" style="--x:-0.5;--y:-0.5;--z:-0.5"></i>
+        <i class="lat-node" style="--x:-0.5;--y:-0.5;--z:0.5"></i>
+        <i class="lat-node lat-node--accent" style="--x:-0.5;--y:0.5;--z:-0.5"></i>
+        <i class="lat-node" style="--x:-0.5;--y:0.5;--z:0.5"></i>
+        <i class="lat-node lat-node--accent" style="--x:0.5;--y:-0.5;--z:-0.5"></i>
+        <i class="lat-node" style="--x:0.5;--y:-0.5;--z:0.5"></i>
+        <i class="lat-node" style="--x:0.5;--y:0.5;--z:-0.5"></i>
+        <i class="lat-node lat-node--accent" style="--x:0.5;--y:0.5;--z:0.5"></i>
+      </div>
+    </div>
+    <div class="depth-field depth-field--vault" aria-hidden="true">
+      <i style="--fx:12%;--fy:8%;--fz:180px;--fs:2;--fo:.4;--dx:20px;--dy:26px;--fdur:24s;--fd:-5s"></i>
+      <i style="--fx:34%;--fy:64%;--fz:60px;--fs:1.2;--fo:.3;--dx:-18px;--dy:-22px;--fdur:30s;--fd:-13s"></i>
+      <i style="--fx:58%;--fy:22%;--fz:280px;--fs:2.5;--fo:.28;--dx:24px;--dy:-18px;--fdur:21s;--fd:-2s"></i>
+      <i style="--fx:72%;--fy:78%;--fz:120px;--fs:1.5;--fo:.45;--dx:-22px;--dy:20px;--fdur:27s;--fd:-9s"></i>
+      <i style="--fx:88%;--fy:36%;--fz:220px;--fs:2.1;--fo:.35;--dx:16px;--dy:24px;--fdur:23s;--fd:-16s"></i>
+      <i style="--fx:46%;--fy:92%;--fz:20px;--fs:1;--fo:.25;--dx:-20px;--dy:-26px;--fdur:32s;--fd:-7s"></i>
+    </div>
+    <span class="spotlight js-only" aria-hidden="true"></span>
+    <div class="shell">
+      <div class="section-head reveal">
+        <p class="record"><span>02</span> Dòng thời gian</p>
+        <div>
+          <h2 id="timeline-title">Từ một đề xuất đến một chuẩn sống.</h2>
+          <p class="lede">Các mốc dưới đây tách bạch giữa sự phát triển của Web — hạ tầng, trình duyệt, cách mọi người dùng — và các cột mốc của HTML, ngôn ngữ đánh dấu tài liệu.</p>
+        </div>
+      </div>
+
+      <div class="timeline-tools">
+        <div class="legend" role="group" aria-label="Chú thích loại mốc">
+          <span class="legend-item"><span class="badge badge--web">Web</span> Hệ thống &amp; hạ tầng</span>
+          <span class="legend-item"><span class="badge badge--html">HTML</span> Ngôn ngữ đánh dấu</span>
+        </div>
+        <p class="timeline-hint">Mở từng mốc để đọc chi tiết.</p>
+      </div>
+
+      <ol class="timeline">
+        <li class="timeline-item timeline-item--web">
+          <div class="timeline-card">
+            <div class="timeline-meta">
+              <span class="badge badge--web">Web</span>
+              <time datetime="1989">1989</time>
+            </div>
+            <details class="milestone" open>
+              <summary>
+                <h3>Đề xuất tại CERN</h3>
+                <span class="summary-icon" aria-hidden="true"></span>
+              </summary>
+              <div class="milestone-body">
+                <p>Tháng 3/1989, Tim Berners-Lee — khi đó là kỹ sư phần mềm tại CERN — viết “Information Management: A Proposal”. Ông phác thảo một “web” tài liệu liên kết để giúp CERN quản lý lượng thông tin ngày càng phức tạp.</p>
+                <p class="milestone-source">Nguồn: <a class="ext" href="https://www.w3.org/History/1989/proposal.html" target="_blank" rel="noopener noreferrer">W3C · bản lưu đề xuất 1989</a></p>
+              </div>
+            </details>
+          </div>
+        </li>
+
+        <li class="timeline-item timeline-item--web">
+          <div class="timeline-card">
+            <div class="timeline-meta">
+              <span class="badge badge--web">Web</span>
+              <time datetime="1990">1990</time>
+            </div>
+            <details class="milestone">
+              <summary>
+                <h3>Trình duyệt và máy chủ đầu tiên</h3>
+                <span class="summary-icon" aria-hidden="true"></span>
+              </summary>
+              <div class="milestone-body">
+                <p>Cùng Robert Cailliau, Berners-Lee hoàn thiện đề xuất thành một management proposal vào tháng 11/1990. Cuối năm đó, trình duyệt và máy chủ Web đầu tiên đã chạy trên một máy NeXT tại CERN.</p>
+                <p class="milestone-source">Nguồn: <a class="ext" href="https://home.cern/science/computing/the-birth-of-the-web/short-history-web/" target="_blank" rel="noopener noreferrer">CERN · lịch sử Web</a></p>
+              </div>
+            </details>
+          </div>
+        </li>
+
+        <li class="timeline-item timeline-item--html">
+          <div class="timeline-card">
+            <div class="timeline-meta">
+              <span class="badge badge--html">HTML</span>
+              <time datetime="1991">1991</time>
+            </div>
+            <details class="milestone">
+              <summary>
+                <h3>WWW ra công chúng; HTML Tags</h3>
+                <span class="summary-icon" aria-hidden="true"></span>
+              </summary>
+              <div class="milestone-body">
+                <p>Phần mềm WWW được cấp cho đồng nghiệp tại CERN từ tháng 3/1991. Tháng 8/1991, Berners-Lee công bố nó trên các nhóm tin Internet. Trong giai đoạn này, tài liệu “HTML Tags” — một trong những bản mô tả HTML sớm nhất — được lưu hành.</p>
+                <p class="milestone-source">Nguồn: <a class="ext" href="https://home.cern/science/computing/the-birth-of-the-web/short-history-web/" target="_blank" rel="noopener noreferrer">CERN · lịch sử Web</a>; <a class="ext" href="https://www.w3.org/History/19921103-hypertext/hypertext/WWW/MarkUp/Tags.html" target="_blank" rel="noopener noreferrer">W3C · bản lưu HTML Tags</a></p>
+              </div>
+            </details>
+          </div>
+        </li>
+
+        <li class="timeline-item timeline-item--html">
+          <div class="timeline-card">
+            <div class="timeline-meta">
+              <span class="badge badge--html">HTML</span>
+              <time datetime="1995">1995</time>
+            </div>
+            <details class="milestone">
+              <summary>
+                <h3>HTML 2.0 được chuẩn hóa</h3>
+                <span class="summary-icon" aria-hidden="true"></span>
+              </summary>
+              <div class="milestone-body">
+                <p>IETF công bố RFC 1866, đưa HTML 2.0 thành đặc tả chính thức. Các thành phần quen thuộc — tiêu đề, đoạn, danh sách, liên kết, biểu mẫu, hình ảnh — được chuẩn hóa để trình duyệt xử lý thống nhất.</p>
+                <p class="milestone-source">Nguồn: <a class="ext" href="https://www.rfc-editor.org/rfc/rfc1866" target="_blank" rel="noopener noreferrer">IETF · RFC 1866</a></p>
+              </div>
+            </details>
+          </div>
+        </li>
+
+        <li class="timeline-item timeline-item--html">
+          <div class="timeline-card">
+            <div class="timeline-meta">
+              <span class="badge badge--html">HTML</span>
+              <time datetime="1997">1997</time>
+            </div>
+            <details class="milestone">
+              <summary>
+                <h3>Bảng, kiểu dáng, cấu trúc</h3>
+                <span class="summary-icon" aria-hidden="true"></span>
+              </summary>
+              <div class="milestone-body">
+                <p>HTML 3.2 (1/1997) bổ sung bảng và nhiều thuộc tính trình bày. HTML 4.0 (12/1997) đẩy mạnh việc tách cấu trúc khỏi trình bày, với style sheet, hỗ trợ quốc tế hóa và khả năng tiếp cận.</p>
+                <p class="milestone-source">Nguồn: <a class="ext" href="https://www.w3.org/TR/REC-html32" target="_blank" rel="noopener noreferrer">W3C · HTML 3.2</a>; <a class="ext" href="https://www.w3.org/TR/REC-html40-971218/" target="_blank" rel="noopener noreferrer">W3C · HTML 4.0</a></p>
+              </div>
+            </details>
+          </div>
+        </li>
+
+        <li class="timeline-item timeline-item--html">
+          <div class="timeline-card">
+            <div class="timeline-meta">
+              <span class="badge badge--html">HTML</span>
+              <time datetime="1999">1999</time>
+            </div>
+            <details class="milestone">
+              <summary>
+                <h3>HTML 4.01</h3>
+                <span class="summary-icon" aria-hidden="true"></span>
+              </summary>
+              <div class="milestone-body">
+                <p>Bản hiệu chỉnh của HTML 4.0 được công bố tháng 12/1999. HTML 4.01 trở thành nền tảng ổn định được các trình duyệt và website dùng rộng rãi trong nhiều năm.</p>
+                <p class="milestone-source">Nguồn: <a class="ext" href="https://www.w3.org/TR/html401/" target="_blank" rel="noopener noreferrer">W3C · HTML 4.01</a></p>
+              </div>
+            </details>
+          </div>
+        </li>
+
+        <li class="timeline-item timeline-item--html">
+          <div class="timeline-card">
+            <div class="timeline-meta">
+              <span class="badge badge--html">HTML</span>
+              <time datetime="2004">2004</time>
+            </div>
+            <details class="milestone">
+              <summary>
+                <h3>WHATWG và HTML5</h3>
+                <span class="summary-icon" aria-hidden="true"></span>
+              </summary>
+              <div class="milestone-body">
+                <p>Sau một hội thảo của W3C, đại diện Apple, Mozilla và Opera thành lập WHATWG, bắt đầu phát triển HTML5 theo hướng bám sát web thực tế. Song song, W3C theo đuổi XHTML 2.0; HTML5 về sau trở thành hướng đi chung.</p>
+                <p class="milestone-source">Nguồn: <a class="ext" href="https://whatwg.org/faq" target="_blank" rel="noopener noreferrer">WHATWG · FAQ</a></p>
+              </div>
+            </details>
+          </div>
+        </li>
+
+        <li class="timeline-item timeline-item--html">
+          <div class="timeline-card">
+            <div class="timeline-meta">
+              <span class="badge badge--html">HTML</span>
+              <time datetime="2014">2014</time>
+            </div>
+            <details class="milestone">
+              <summary>
+                <h3>HTML5 trở thành Recommendation</h3>
+                <span class="summary-icon" aria-hidden="true"></span>
+              </summary>
+              <div class="milestone-body">
+                <p>Ngày 28/10/2014, W3C công bố HTML5 là Recommendation. Bản chuẩn mang đến các thẻ ngữ nghĩa, audio/video, canvas, biểu mẫu mới và nhiều API hỗ trợ ứng dụng web.</p>
+                <p class="milestone-source">Nguồn: <a class="ext" href="https://www.w3.org/TR/2014/REC-html5-20141028/" target="_blank" rel="noopener noreferrer">W3C · HTML5 Recommendation</a></p>
+              </div>
+            </details>
+          </div>
+        </li>
+
+        <li class="timeline-item timeline-item--html">
+          <div class="timeline-card">
+            <div class="timeline-meta">
+              <span class="badge badge--html">HTML</span>
+              <span class="timeline-now">Nay</span>
+            </div>
+            <details class="milestone">
+              <summary>
+                <h3>Một chuẩn sống</h3>
+                <span class="summary-icon" aria-hidden="true"></span>
+              </summary>
+              <div class="milestone-body">
+                <p>HTML ngày nay được duy trì liên tục theo WHATWG Living Standard: các tính năng được cập nhật khi trình duyệt và cộng đồng phát triển, thay vì chờ một phiên bản “HTML6” theo chu kỳ lớn.</p>
+                <p class="milestone-source">Nguồn: <a class="ext" href="https://html.spec.whatwg.org/" target="_blank" rel="noopener noreferrer">WHATWG · HTML Living Standard</a></p>
+              </div>
+            </details>
+          </div>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="tu-lieu" class="section" aria-labelledby="archive-title">
+    <div class="shell">
+      <div class="section-head reveal">
+        <p class="record"><span>03</span> Tư liệu</p>
+        <div>
+          <h2 id="archive-title">Trang giấy nơi Web bắt đầu.</h2>
+          <p class="lede">Một sơ đồ vẽ bằng vòng tròn và mũi tên, lưu trong đề xuất tháng 3/1989 — trước khi có trình duyệt hiện đại, CSS hay điện thoại thông minh.</p>
+        </div>
+      </div>
+
+      <div class="archive-grid">
+        <div class="archive-stage reveal">
+        <div class="archive-figure">
+          <figure class="archive-figure-inner" aria-labelledby="archive-caption">
+          <div class="archive-label">
+            <span>Tư liệu / 01</span>
+            <span>W3C archive</span>
+          </div>
+          <div class="image-frame">
+            <img id="archive-image" src="data:image/gif;base64,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" alt="Sơ đồ vòng tròn và mũi tên trong đề xuất năm 1989, với các nút Hypertext, Hypermedia, A Proposal “Mesh” và CERN." width="512" height="458" decoding="async">
+          </div>
+          <figcaption id="archive-caption">
+            Sơ đồ trong “Information Management: A Proposal” (3/1989). Ảnh: Tim Berners-Lee; bản lưu tại <a class="ext" href="https://www.w3.org/History/1989/proposal.html" target="_blank" rel="noopener noreferrer">W3C</a>. Dùng cho mục đích học tập.
+          </figcaption>
+          </figure>
+          <div class="figure-actions">
+            <button class="button button--small button--ghost js-only" type="button" id="lightbox-open" aria-haspopup="dialog">Mở ảnh lớn</button>
+            <a class="text-link" href="https://www.w3.org/History/1989/proposal.html" target="_blank" rel="noopener noreferrer">Đọc đề xuất trên W3C <span aria-hidden="true">↗</span></a>
+          </div>
+        </div>
+        </div>
+
+        <div class="archive-copy reveal">
+          <blockquote class="pullquote">
+            <p>“Hệ thống chúng ta cần giống như một sơ đồ những vòng tròn và mũi tên, nơi vòng tròn và mũi tên có thể đại diện cho bất cứ thứ gì.”</p>
+            <footer>Tim Berners-Lee, <cite>Information Management: A Proposal</cite>, 1989 <span>(lược dịch)</span></footer>
+          </blockquote>
+
+          <p>Trong sơ đồ, mỗi vòng tròn là một khái niệm hoặc tài liệu; mỗi mũi tên là một quan hệ. Berners-Lee gọi các vòng tròn là <em>node</em> và các mũi tên là <em>link</em> — những từ vẫn còn trong ngôn ngữ web hôm nay.</p>
+          <p>Điều đáng chú ý không nằm ở một thuật ngữ riêng lẻ, mà ở cách kết hợp: hypertext + hạ tầng mạng + một cách định danh tài liệu thống nhất. Đó là hạt giống của một hệ thống thông tin toàn cầu.</p>
+
+          <aside class="note note--archive" aria-labelledby="archive-note-title">
+            <p class="note-kicker">Đính chính</p>
+            <h3 id="archive-note-title">Hypertext không bắt đầu ở đây.</h3>
+            <p>“Hypertext” đã xuất hiện trước đề xuất này, gắn với Ted Nelson. Sơ đồ 1989 không phải lần đầu cụm từ ấy xuất hiện; nó cho thấy cách Berners-Lee hình dung một mạng tài liệu liên kết và biến ý tưởng đó thành một dự án cụ thể tại CERN.</p>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="cau-truc" class="section" aria-labelledby="structure-title">
+    <div class="shell">
+      <div class="section-head reveal">
+        <p class="record"><span>04</span> Cấu trúc</p>
+        <div>
+          <h2 id="structure-title">HTML không tô màu. HTML định nghĩa.</h2>
+          <p class="lede">Một trang web không chỉ là chữ trên màn hình. HTML đặt tên cho từng phần của nội dung để trình duyệt, công cụ tìm kiếm và công nghệ hỗ trợ hiểu được chúng.</p>
+        </div>
+      </div>
+
+      <div class="structure-grid">
+        <div class="structure-copy reveal">
+          <p>Mỗi phần tử HTML mô tả vai trò của nội dung: <strong>&lt;h2&gt;</strong> là một tiêu đề, <strong>&lt;p&gt;</strong> là một đoạn, <strong>&lt;a&gt;</strong> là một liên kết, <strong>&lt;figure&gt;</strong> là một hình ảnh có chú thích. Trình duyệt kết hợp cấu trúc này với CSS để trình bày; JavaScript thêm hành vi.</p>
+          <p>Từ bộ thẻ nhỏ ban đầu, HTML đã mở rộng để hỗ trợ bảng, biểu mẫu, hình ảnh, âm thanh, video, canvas và các thẻ ngữ nghĩa như <strong>&lt;article&gt;</strong>, <strong>&lt;nav&gt;</strong>, <strong>&lt;figure&gt;</strong>. Điều không đổi: HTML mô tả nội dung <em>là gì</em>, không quyết định nó trông ra sao.</p>
+          <p class="micro-note"><span aria-hidden="true">↳</span> HTML là ngôn ngữ đánh dấu — markup language — không phải ngôn ngữ lập trình.</p>
+        </div>
+
+        <div class="specimen reveal">
+          <div class="specimen-head">
+            <span>Mã nguồn</span>
+            <span>HTML</span>
+          </div>
+          <pre tabindex="0" aria-label="Mã HTML mẫu"><code><span class="tok-tag">&lt;h2&gt;</span>Internet, Web, HTML<span class="tok-tag">&lt;/h2&gt;</span>
+<span class="tok-tag">&lt;p&gt;</span>Ba lớp, <span class="tok-tag">&lt;a href=<span class="tok-string">"#boi-canh"</span>&gt;</span>một hệ sinh thái<span class="tok-tag">&lt;/a&gt;</span>.<span class="tok-tag">&lt;/p&gt;</span></code></pre>
+          <div class="specimen-head specimen-head--result">
+            <span>Kết quả</span>
+            <span>Mô phỏng</span>
+          </div>
+          <div class="rendered">
+            <p class="rendered-title">Internet, Web, HTML</p>
+            <p>Ba lớp, <a href="#boi-canh">một hệ sinh thái</a>.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="kiem-tra" class="section" aria-labelledby="quiz-title">
+    <div class="shell">
+      <div class="section-head reveal">
+        <p class="record"><span>05</span> Kiểm tra</p>
+        <div>
+          <h2 id="quiz-title">Bạn đã nắm được gì?</h2>
+          <p class="lede">Bốn câu hỏi ngắn, dựa hoàn toàn vào nội dung phía trên. Chọn đáp án rồi kiểm tra — bạn có thể làm lại bất cứ lúc nào.</p>
+        </div>
+      </div>
+
+      <form class="quiz-form reveal" id="quiz-form" aria-labelledby="quiz-title" novalidate>
+        <div class="quiz-meter js-only" aria-hidden="true">
+          <span class="quiz-meter__label">Đã trả lời <b id="quiz-answered">0</b> / 4 câu</span>
+          <span class="quiz-meter__track"><span id="quiz-meter-fill"></span></span>
+        </div>
+        <div class="quiz-grid">
+          <fieldset class="question" data-question="0">
+            <legend><span class="q-index">01</span>Tim Berners-Lee đề xuất hệ thống thông tin liên kết tại CERN vào năm nào?</legend>
+            <div class="options">
+              <label class="option"><input type="radio" name="q1" value="a"><span>1983</span></label>
+              <label class="option"><input type="radio" name="q1" value="b"><span>1989</span></label>
+              <label class="option"><input type="radio" name="q1" value="c"><span>1993</span></label>
+              <label class="option"><input type="radio" name="q1" value="d"><span>1995</span></label>
+            </div>
+            <p class="feedback" hidden></p>
+          </fieldset>
+
+          <fieldset class="question" data-question="1">
+            <legend><span class="q-index">02</span>Phát biểu nào mô tả đúng nhất quan hệ giữa Internet và Web?</legend>
+            <div class="options">
+              <label class="option"><input type="radio" name="q2" value="a"><span>Internet là một phần của Web.</span></label>
+              <label class="option"><input type="radio" name="q2" value="b"><span>Web là một hệ thống thông tin chạy trên Internet.</span></label>
+              <label class="option"><input type="radio" name="q2" value="c"><span>HTML là tên khác của Internet.</span></label>
+              <label class="option"><input type="radio" name="q2" value="d"><span>Web là hạ tầng mạng, còn Internet là trình duyệt.</span></label>
+            </div>
+            <p class="feedback" hidden></p>
+          </fieldset>
+
+          <fieldset class="question" data-question="2">
+            <legend><span class="q-index">03</span>HTML5 trở thành Recommendation của W3C vào năm nào?</legend>
+            <div class="options">
+              <label class="option"><input type="radio" name="q3" value="a"><span>2004</span></label>
+              <label class="option"><input type="radio" name="q3" value="b"><span>2014</span></label>
+              <label class="option"><input type="radio" name="q3" value="c"><span>2019</span></label>
+              <label class="option"><input type="radio" name="q3" value="d"><span>1999</span></label>
+            </div>
+            <p class="feedback" hidden></p>
+          </fieldset>
+
+          <fieldset class="question" data-question="3">
+            <legend><span class="q-index">04</span>Ngày nay HTML được duy trì chủ yếu theo mô hình nào?</legend>
+            <div class="options">
+              <label class="option"><input type="radio" name="q4" value="a"><span>Các phiên bản đánh số cố định, phát hành theo chu kỳ.</span></label>
+              <label class="option"><input type="radio" name="q4" value="b"><span>WHATWG Living Standard, cập nhật liên tục.</span></label>
+              <label class="option"><input type="radio" name="q4" value="c"><span>Một đặc tả đóng chỉ do CERN quản lý.</span></label>
+              <label class="option"><input type="radio" name="q4" value="d"><span>Chỉ cập nhật khi có HTML6.</span></label>
+            </div>
+            <p class="feedback" hidden></p>
+          </fieldset>
+        </div>
+
+        <div class="quiz-footer">
+          <p class="quiz-status" id="quiz-status" role="status" aria-live="polite" tabindex="-1"></p>
+          <div class="quiz-actions">
+            <button class="button js-only" type="submit">Kiểm tra đáp án</button>
+            <button class="button button--ghost js-only" type="button" id="quiz-reset" hidden>Làm lại</button>
+          </div>
+        </div>
+        <p class="quiz-privacy">Không có dữ liệu nào được gửi đi; phần kiểm tra chạy ngay trên trình duyệt của bạn.</p>
+        <noscript>
+          <p class="quiz-noscript">Phần chấm điểm cần JavaScript. Nội dung bài đọc, dòng thời gian và tư liệu vẫn hoạt động đầy đủ khi JavaScript bị tắt.</p>
+        </noscript>
+      </form>
+    </div>
+  </section>
+
+  <section id="nguon" class="section" aria-labelledby="sources-title">
+    <div class="shell">
+      <div class="section-head reveal">
+        <p class="record"><span>06</span> Nguồn</p>
+        <div>
+          <h2 id="sources-title">Đọc tận nguồn.</h2>
+          <p class="lede">Các tài liệu gốc được dùng để kiểm chứng nội dung. Liên kết mở trong tab mới; những mốc quan trọng trong dòng thời gian cũng có nguồn riêng.</p>
+        </div>
+      </div>
+
+      <div class="sources-grid reveal">
+        <div>
+          <p class="sources-intro">Ưu tiên tư liệu của CERN, W3C, IETF và WHATWG — những tổ chức gắn trực tiếp với lịch sử và đặc tả của Web. Các liên kết được kiểm tra tháng 10/2026.</p>
+          <p class="source-note">Ảnh sơ đồ: Tim Berners-Lee, 1989; bản lưu W3C, dùng cho mục đích học tập. Trang này là một hồ sơ độc lập, không phải ấn phẩm chính thức của các tổ chức trên.</p>
+        </div>
+
+        <ol class="source-list">
+          <li>
+            <a href="https://home.cern/science/computing/the-birth-of-the-web/short-history-web/" target="_blank" rel="noopener noreferrer">
+              <span class="source-title">CERN — A short history of the Web</span>
+              <span class="source-meta">CERN · lịch sử Web</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.w3.org/History/1989/proposal.html" target="_blank" rel="noopener noreferrer">
+              <span class="source-title">W3C — Information Management: A Proposal</span>
+              <span class="source-meta">Tim Berners-Lee · 3/1989 · bản lưu HTML hóa</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.w3.org/History/19921103-hypertext/hypertext/WWW/MarkUp/Tags.html" target="_blank" rel="noopener noreferrer">
+              <span class="source-title">W3C — Tags used in HTML</span>
+              <span class="source-meta">Bản lưu W3C · 1992</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.rfc-editor.org/rfc/rfc1866" target="_blank" rel="noopener noreferrer">
+              <span class="source-title">IETF — RFC 1866: Hypertext Markup Language — 2.0</span>
+              <span class="source-meta">11/1995 · đặc tả HTML 2.0</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://www.w3.org/TR/2014/REC-html5-20141028/" target="_blank" rel="noopener noreferrer">
+              <span class="source-title">W3C — HTML5 Recommendation</span>
+              <span class="source-meta">28/10/2014 · khuyến nghị chính thức</span>
+            </a>
+          </li>
+          <li>
+            <a href="https://html.spec.whatwg.org/" target="_blank" rel="noopener noreferrer">
+              <span class="source-title">WHATWG — HTML Living Standard</span>
+              <span class="source-meta">Đặc tả sống · cập nhật liên tục</span>
+            </a>
+          </li>
+        </ol>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="lattice3d lattice3d--footer" aria-hidden="true">
+    <div class="lattice3d__spin lattice3d__spin--reverse">
+      <i class="lat-edge" style="--x:0;--y:-0.5;--z:-0.5"></i>
+      <i class="lat-edge lat-edge--live" style="--x:0;--y:-0.5;--z:0.5"></i>
+      <i class="lat-edge" style="--x:0;--y:0.5;--z:-0.5"></i>
+      <i class="lat-edge" style="--x:0;--y:0.5;--z:0.5"></i>
+      <i class="lat-edge lat-edge--accent" style="--x:-0.5;--y:0;--z:-0.5;--rz:90deg"></i>
+      <i class="lat-edge" style="--x:-0.5;--y:0;--z:0.5;--rz:90deg"></i>
+      <i class="lat-edge" style="--x:0.5;--y:0;--z:-0.5;--rz:90deg"></i>
+      <i class="lat-edge lat-edge--accent" style="--x:0.5;--y:0;--z:0.5;--rz:90deg"></i>
+      <i class="lat-edge" style="--x:-0.5;--y:-0.5;--z:0;--ry:90deg"></i>
+      <i class="lat-edge lat-edge--live" style="--x:-0.5;--y:0.5;--z:0;--ry:90deg"></i>
+      <i class="lat-edge" style="--x:0.5;--y:-0.5;--z:0;--ry:90deg"></i>
+      <i class="lat-edge" style="--x:0.5;--y:0.5;--z:0;--ry:90deg"></i>
+      <i class="lat-node" style="--x:-0.5;--y:-0.5;--z:-0.5"></i>
+      <i class="lat-node lat-node--accent" style="--x:-0.5;--y:-0.5;--z:0.5"></i>
+      <i class="lat-node" style="--x:-0.5;--y:0.5;--z:-0.5"></i>
+      <i class="lat-node lat-node--accent" style="--x:-0.5;--y:0.5;--z:0.5"></i>
+      <i class="lat-node" style="--x:0.5;--y:-0.5;--z:-0.5"></i>
+      <i class="lat-node lat-node--accent" style="--x:0.5;--y:-0.5;--z:0.5"></i>
+      <i class="lat-node lat-node--accent" style="--x:0.5;--y:0.5;--z:-0.5"></i>
+      <i class="lat-node" style="--x:0.5;--y:0.5;--z:0.5"></i>
+    </div>
+  </div>
+  <div class="shell footer-inner">
+    <p class="footer-mark" aria-hidden="true">1989 <span>→</span> NAY</p>
+    <div>
+      <a class="brand" href="#top" aria-label="HTML / Hồ sơ — về đầu trang">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-text">HTML <span class="brand-sep">/</span> HỒ SƠ</span>
+      </a>
+      <p class="footer-copy">Một hồ sơ học tập về lịch sử HTML và Web: từ đề xuất tại CERN năm 1989 đến chuẩn sống được cập nhật mỗi ngày.</p>
+    </div>
+    <div class="footer-links">
+      <a href="#nguon">Nguồn</a>
+      <a href="#top">Về đầu trang ↑</a>
+    </div>
+    <p class="footer-legal">Không liên kết chính thức với CERN, W3C hay WHATWG. Tư liệu lịch sử thuộc về các tác giả và tổ chức gốc; sơ đồ được sử dụng cho mục đích học tập, có ghi nguồn. Biên soạn 10.2026.</p>
+  </div>
+</footer>
+
+<button class="to-top js-only" type="button" aria-label="Về đầu trang" title="Về đầu trang" hidden>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true" focusable="false">
+    <path d="M12 20V5M6 11l6-6 6 6"></path>
+  </svg>
+</button>
+
+<dialog class="lightbox" id="lightbox" aria-labelledby="lightbox-title" aria-describedby="lightbox-caption">
+  <div class="lightbox-inner">
+    <div class="lightbox-head">
+      <h2 id="lightbox-title">Sơ đồ trong đề xuất 1989</h2>
+      <form method="dialog">
+        <button class="lightbox-close" type="submit" aria-label="Đóng ảnh">×</button>
+      </form>
+    </div>
+    <img class="lightbox-image" id="lightbox-image" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="Sơ đồ vòng tròn và mũi tên trong đề xuất năm 1989, với các nút Hypertext, Hypermedia, A Proposal “Mesh” và CERN." width="512" height="458">
+    <p class="lightbox-caption" id="lightbox-caption">Sơ đồ vòng tròn và mũi tên trong đề xuất “Information Management: A Proposal” của Tim Berners-Lee, tháng 3/1989. Ảnh: bản lưu W3C; dùng cho mục đích học tập.</p>
+    <p class="lightbox-source"><a class="ext" href="https://www.w3.org/History/1989/proposal.html" target="_blank" rel="noopener noreferrer">Đọc toàn văn đề xuất trên W3C</a></p>
+  </div>
+</dialog>
+
+<script>
+(() => {
+  'use strict';
+
+  const root = document.documentElement;
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Theme ---------------------------------------------------- */
+  const themeToggle = document.querySelector('.theme-toggle');
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+
+  const syncTheme = () => {
+    const dark = root.dataset.theme === 'dark';
+    if (themeToggle) {
+      const label = dark ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối';
+      themeToggle.setAttribute('aria-label', label);
+      themeToggle.setAttribute('title', label);
+    }
+    if (themeMeta) themeMeta.setAttribute('content', dark ? '#08141d' : '#f4efe5');
+  };
+
+  syncTheme();
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', () => {
+      const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
+      root.dataset.theme = next;
+      try { localStorage.setItem('html-archive-theme', next); } catch (error) { /* storage unavailable */ }
+      syncTheme();
+    });
+  }
+
+  /* Section reveal ------------------------------------------ */
+  const revealItems = Array.from(document.querySelectorAll('.reveal'));
+  if ('IntersectionObserver' in window && !reduceMotion) {
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+
+    revealItems.forEach((item) => {
+      item.classList.add('reveal-init');
+      revealObserver.observe(item);
+    });
+  }
+
+  /* Scroll spy ---------------------------------------------- */
+  const navLinks = Array.from(document.querySelectorAll('.site-nav a[href^="#"]'));
+  const navSections = navLinks
+    .map((link) => document.querySelector(link.getAttribute('href')))
+    .filter(Boolean);
+
+  const setActiveSection = () => {
+    if (!navSections.length) return;
+    const threshold = 130;
+    let current = null;
+    navSections.forEach((section) => {
+      if (section.getBoundingClientRect().top <= threshold) current = section;
+    });
+    navLinks.forEach((link) => {
+      const active = current !== null && link.getAttribute('href') === '#' + current.id;
+      link.classList.toggle('is-active', active);
+      if (active) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+  };
+
+  let scrollQueued = false;
+  const onScroll = () => {
+    if (scrollQueued) return;
+    scrollQueued = true;
+    window.requestAnimationFrame(() => {
+      setActiveSection();
+      scrollQueued = false;
+    });
+  };
+
+  if (navSections.length) {
+    window.addEventListener('scroll', onScroll, { passive: true });
+    setActiveSection();
+  }
+
+  /* Back to top --------------------------------------------- */
+  const toTop = document.querySelector('.to-top');
+  if (toTop) {
+    let shown = false;
+    const updateToTop = () => {
+      const shouldShow = window.scrollY > 760;
+      if (shouldShow !== shown) {
+        toTop.hidden = !shouldShow;
+        shown = shouldShow;
+      }
+    };
+    window.addEventListener('scroll', updateToTop, { passive: true });
+    updateToTop();
+    toTop.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+  }
+
+  /* Archive lightbox ---------------------------------------- */
+  const dialog = document.getElementById('lightbox');
+  const openDialog = document.getElementById('lightbox-open');
+  const archiveImage = document.getElementById('archive-image');
+  const dialogImage = document.getElementById('lightbox-image');
+  const closeDialog = dialog ? dialog.querySelector('.lightbox-close') : null;
+
+  if (dialog && openDialog && archiveImage && dialogImage && typeof dialog.showModal === 'function') {
+    let returnFocus = null;
+
+    openDialog.addEventListener('click', () => {
+      returnFocus = openDialog;
+      dialogImage.src = archiveImage.currentSrc || archiveImage.src;
+      dialogImage.alt = archiveImage.alt;
+      dialog.showModal();
+      document.body.classList.add('dialog-open');
+      if (closeDialog) closeDialog.focus();
+    });
+
+    dialog.addEventListener('close', () => {
+      document.body.classList.remove('dialog-open');
+      if (returnFocus && typeof returnFocus.focus === 'function') returnFocus.focus();
+    });
+
+    dialog.addEventListener('click', (event) => {
+      if (event.target === dialog) dialog.close();
+    });
+  } else if (openDialog) {
+    openDialog.hidden = true;
+  }
+
+  /* Quiz ----------------------------------------------------- */
+  const quiz = document.getElementById('quiz-form');
+  const status = document.getElementById('quiz-status');
+  const resetButton = document.getElementById('quiz-reset');
+  const submitButton = quiz ? quiz.querySelector('button[type="submit"]') : null;
+
+  const answerKey = [
+    {
+      correct: 'b',
+      explanation: 'Đề xuất “Information Management: A Proposal” được viết tháng 3/1989. Web ra đời sau đó — và không phải là Internet.'
+    },
+    {
+      correct: 'b',
+      explanation: 'Web là một hệ thống thông tin (tài liệu, URL, hyperlink, HTTP) chạy trên Internet. Internet là hạ tầng mạng rộng hơn.'
+    },
+    {
+      correct: 'b',
+      explanation: 'W3C công bố HTML5 là Recommendation ngày 28/10/2014. HTML sau đó tiếp tục phát triển, không dừng lại ở cột mốc này.'
+    },
+    {
+      correct: 'b',
+      explanation: 'HTML ngày nay được duy trì theo WHATWG Living Standard, với các cập nhật liên tục thay vì những phiên bản “HTML6” theo chu kỳ lớn.'
+    }
+  ];
+
+  if (quiz && status && resetButton && submitButton) {
+    const questions = Array.from(quiz.querySelectorAll('.question'));
+
+    const resetQuiz = () => {
+      quiz.reset();
+      questions.forEach((question) => {
+        question.classList.remove('is-incomplete');
+        question.disabled = false;
+        question.querySelectorAll('.option--correct, .option--wrong').forEach((option) => {
+          option.classList.remove('option--correct', 'option--wrong');
+        });
+        const feedback = question.querySelector('.feedback');
+        if (feedback) {
+          feedback.hidden = true;
+          feedback.textContent = '';
+          feedback.className = 'feedback';
+        }
+      });
+      status.textContent = '';
+      resetButton.hidden = true;
+      submitButton.hidden = false;
+      const firstInput = quiz.querySelector('input[type="radio"]');
+      if (firstInput) firstInput.focus();
+    };
+
+    quiz.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const unanswered = [];
+      const results = [];
+
+      questions.forEach((question, index) => {
+        const selected = question.querySelector('input[type="radio"]:checked');
+        question.classList.remove('is-incomplete');
+        if (!selected) {
+          unanswered.push(question);
+          question.classList.add('is-incomplete');
+        } else {
+          results.push({ question, index, selected });
+        }
+      });
+
+      if (unanswered.length) {
+        status.textContent = `Hãy trả lời đủ ${questions.length} câu. Còn ${unanswered.length} câu chưa chọn.`;
+        const firstUnanswered = unanswered[0].querySelector('input[type="radio"]');
+        if (firstUnanswered) firstUnanswered.focus();
+        return;
+      }
+
+      let score = 0;
+      results.forEach(({ question, index, selected }) => {
+        const item = answerKey[index];
+        const isCorrect = selected.value === item.correct;
+        if (isCorrect) score += 1;
+
+        selected.closest('.option').classList.add(isCorrect ? 'option--correct' : 'option--wrong');
+        const correctInput = question.querySelector(`input[value="${item.correct}"]`);
+        if (correctInput) correctInput.closest('.option').classList.add('option--correct');
+
+        const feedback = question.querySelector('.feedback');
+        if (feedback) {
+          feedback.hidden = false;
+          feedback.className = 'feedback ' + (isCorrect ? 'feedback--ok' : 'feedback--no');
+          const label = document.createElement('strong');
+          label.textContent = isCorrect ? 'Đúng.' : 'Chưa đúng.';
+          feedback.replaceChildren(label, document.createTextNode(' ' + item.explanation));
+        }
+
+        question.disabled = true;
+      });
+
+      if (score === questions.length) status.textContent = `Bạn đúng cả ${questions.length} câu. Rất tốt!`;
+      else if (score === 0) status.textContent = `Bạn chưa đúng câu nào trong ${questions.length} câu — hãy đọc lại phần Bối cảnh và thử lại.`;
+      else status.textContent = `Bạn đúng ${score}/${questions.length} câu.`;
+
+      submitButton.hidden = true;
+      resetButton.hidden = false;
+      status.focus();
+    });
+
+    resetButton.addEventListener('click', resetQuiz);
+  }
+})();
+</script>
+
+<script>
+(() => {
+  'use strict';
+
+  const progress = document.getElementById('readingProgress');
+  if (progress) {
+    let queued = false;
+    const updateProgress = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const ratio = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+      progress.style.transform = `scaleX(${ratio})`;
+      queued = false;
+    };
+    window.addEventListener('scroll', () => {
+      if (queued) return;
+      queued = true;
+      window.requestAnimationFrame(updateProgress);
+    }, { passive: true });
+    window.addEventListener('resize', updateProgress);
+    updateProgress();
+  }
+
+  const quiz = document.getElementById('quiz-form');
+  if (quiz) {
+    const answered = document.getElementById('quiz-answered');
+    const fill = document.getElementById('quiz-meter-fill');
+    const questions = Array.from(quiz.querySelectorAll('.question'));
+    const updateMeter = () => {
+      const count = questions.filter((question) => question.querySelector('input[type="radio"]:checked')).length;
+      if (answered) answered.textContent = String(count);
+      if (fill) fill.style.transform = `scaleX(${questions.length ? count / questions.length : 0})`;
+    };
+    quiz.addEventListener('change', updateMeter);
+    quiz.addEventListener('submit', updateMeter);
+    const reset = document.getElementById('quiz-reset');
+    if (reset) reset.addEventListener('click', () => window.requestAnimationFrame(updateMeter));
+    updateMeter();
+  }
+})();
+</script>
+
+<script>
+(() => {
+  'use strict';
+
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  if (reduceMotion) return;
+
+  const root = document.documentElement;
+  const hero = document.querySelector('.hero--ink');
+  const vault = document.getElementById('dong-thoi-gian');
+  const plateStage = document.querySelector('.plate-stage');
+  const plateTilt = document.querySelector('.plate-tilt');
+  const timeline = document.querySelector('.timeline');
+  const timelineItems = Array.from(document.querySelectorAll('.timeline-item'));
+  const archiveStage = document.querySelector('.archive-stage');
+  const archiveFigure = document.querySelector('.archive-figure');
+  const progressBar = document.getElementById('readingProgress');
+  const progressTrack = progressBar ? progressBar.parentElement : null;
+
+  const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
+  const lerp = (from, to, amount) => from + (to - from) * amount;
+
+  /* Timeline cards arrive with a 3D stagger ---------------------- */
+  if ('IntersectionObserver' in window && timelineItems.length) {
+    const cardObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-in');
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.15 });
+    timelineItems.forEach((item) => {
+      item.classList.add('card-init');
+      cardObserver.observe(item);
+    });
+  }
+
+  if (!finePointer) return;
+
+  /* Pointer-driven depth ---------------------------------------- */
+  const rest = { rx: 2.4, ry: -5.2, hx: 74, hy: 14 };
+  const scene = {
+    hero: { x: 0, y: 0, tx: 0, ty: 0, sx: 62, sy: 26, tsx: 62, tsy: 26, spot: false, tracking: false },
+    vault: { x: 0, y: 0, tx: 0, ty: 0, sx: 50, sy: 30, tsx: 50, tsy: 30, spot: false },
+    plate: { rx: rest.rx, ry: rest.ry, trx: rest.rx, try_: rest.ry, hx: rest.hx, hy: rest.hy, thx: rest.hx, thy: rest.hy },
+    archive: { rx: 0, ry: 0 },
+    scroll: { hs: 0, ths: 0, vs: 0, tvs: 0, tl: 0, ttl: 0, rp: 0, trp: 0 }
+  };
+
+  const normalized = (rect, px, py) => ({
+    nx: clamp((px - (rect.left + rect.width / 2)) / (rect.width / 2 || 1), -1, 1),
+    ny: clamp((py - (rect.top + rect.height / 2)) / (rect.height / 2 || 1), -1, 1),
+    px: clamp(((px - rect.left) / (rect.width || 1)) * 100, 0, 100),
+    py: clamp(((py - rect.top) / (rect.height || 1)) * 100, 0, 100),
+    inside: px >= rect.left && px <= rect.right && py >= rect.top && py <= rect.bottom
+  });
+
+  const measureScroll = () => {
+    const vh = window.innerHeight || 1;
+    if (hero) {
+      const rect = hero.getBoundingClientRect();
+      scene.scroll.ths = clamp(-rect.top / (rect.height || 1), 0, 1);
+    }
+    if (vault) {
+      const rect = vault.getBoundingClientRect();
+      scene.scroll.tvs = clamp((vh - rect.top) / ((vh + rect.height) || 1), 0, 1);
+    }
+    if (timeline) {
+      const rect = timeline.getBoundingClientRect();
+      scene.scroll.ttl = clamp((vh * 0.62 - rect.top) / (rect.height || 1), 0, 1);
+      timelineItems.forEach((item) => {
+        item.classList.toggle('is-passed', item.getBoundingClientRect().top < vh * 0.62);
+      });
+    }
+    const max = root.scrollHeight - vh;
+    scene.scroll.trp = max > 0 ? clamp(window.scrollY / max, 0, 1) : 0;
+  };
+
+  const parkPlate = () => {
+    scene.plate.trx = rest.rx;
+    scene.plate.try_ = rest.ry;
+    scene.plate.thx = rest.hx;
+    scene.plate.thy = rest.hy;
+  };
+
+  const onHeroMove = (event) => {
+    if (!hero) return;
+    const rect = hero.getBoundingClientRect();
+    const p = normalized(rect, event.clientX, event.clientY);
+    scene.hero.tx = p.nx;
+    scene.hero.ty = p.ny;
+    scene.hero.tsx = p.px;
+    scene.hero.tsy = p.py;
+    scene.hero.spot = true;
+    if (!scene.hero.tracking) {
+      scene.hero.tracking = true;
+      hero.classList.add('is-tracking');
+    }
+    if (plateStage && plateTilt) {
+      const plateRect = plateStage.getBoundingClientRect();
+      const q = normalized(plateRect, event.clientX, event.clientY);
+      if (q.inside) {
+        scene.plate.trx = -q.ny * 8;
+        scene.plate.try_ = q.nx * 12;
+        scene.plate.thx = q.px;
+        scene.plate.thy = q.py;
+      } else {
+        parkPlate();
+      }
+    }
+  };
+
+  const onHeroLeave = () => {
+    scene.hero.tx = 0;
+    scene.hero.ty = 0;
+    scene.hero.spot = false;
+    scene.hero.tracking = false;
+    if (hero) hero.classList.remove('is-tracking');
+    parkPlate();
+  };
+
+  const onVaultMove = (event) => {
+    if (!vault) return;
+    const rect = vault.getBoundingClientRect();
+    const p = normalized(rect, event.clientX, event.clientY);
+    scene.vault.tx = p.nx;
+    scene.vault.ty = p.ny;
+    scene.vault.tsx = p.px;
+    scene.vault.tsy = p.py;
+    scene.vault.spot = true;
+  };
+
+  const onVaultLeave = () => {
+    scene.vault.tx = 0;
+    scene.vault.ty = 0;
+    scene.vault.spot = false;
+  };
+
+  const onArchiveMove = (event) => {
+    if (!archiveStage || !archiveFigure) return;
+    const rect = archiveStage.getBoundingClientRect();
+    const p = normalized(rect, event.clientX, event.clientY);
+    archiveFigure.style.setProperty('--af-rx', (-p.ny * 4).toFixed(2) + 'deg');
+    archiveFigure.style.setProperty('--af-ry', (p.nx * 6).toFixed(2) + 'deg');
+  };
+
+  const onArchiveLeave = () => {
+    if (!archiveFigure) return;
+    archiveFigure.style.setProperty('--af-rx', '0deg');
+    archiveFigure.style.setProperty('--af-ry', '0deg');
+  };
+
+  if (hero) {
+    hero.addEventListener('pointermove', onHeroMove);
+    hero.addEventListener('pointerleave', onHeroLeave);
+  }
+  if (vault) {
+    vault.addEventListener('pointermove', onVaultMove);
+    vault.addEventListener('pointerleave', onVaultLeave);
+  }
+  if (archiveStage) {
+    archiveStage.addEventListener('pointermove', onArchiveMove);
+    archiveStage.addEventListener('pointerleave', onArchiveLeave);
+  }
+
+  let scrollQueued = false;
+  const onScroll = () => {
+    if (scrollQueued) return;
+    scrollQueued = true;
+    window.requestAnimationFrame(() => {
+      measureScroll();
+      scrollQueued = false;
+    });
+  };
+  window.addEventListener('scroll', onScroll, { passive: true });
+  window.addEventListener('resize', onScroll);
+  measureScroll();
+
+  /* One smoothing loop that idles once the scene settles -------- */
+  let raf = null;
+  let frames = 0;
+  let settled = 0;
+
+  const write = (el, name, value, unit) => {
+    if (el) el.style.setProperty(name, value.toFixed(3) + unit);
+  };
+
+  const step = () => {
+    const s = scene.scroll;
+    s.hs = lerp(s.hs, s.ths, 0.14);
+    s.vs = lerp(s.vs, s.tvs, 0.14);
+    s.tl = lerp(s.tl, s.ttl, 0.16);
+    s.rp = lerp(s.rp, s.trp, 0.3);
+
+    scene.hero.x = lerp(scene.hero.x, scene.hero.tx, 0.09);
+    scene.hero.y = lerp(scene.hero.y, scene.hero.ty, 0.09);
+    scene.hero.sx = lerp(scene.hero.sx, scene.hero.tsx, 0.1);
+    scene.hero.sy = lerp(scene.hero.sy, scene.hero.tsy, 0.1);
+
+    scene.vault.x = lerp(scene.vault.x, scene.vault.tx, 0.09);
+    scene.vault.y = lerp(scene.vault.y, scene.vault.ty, 0.09);
+    scene.vault.sx = lerp(scene.vault.sx, scene.vault.tsx, 0.1);
+    scene.vault.sy = lerp(scene.vault.sy, scene.vault.tsy, 0.1);
+
+    const p = scene.plate;
+    p.rx = lerp(p.rx, p.trx, 0.12);
+    p.ry = lerp(p.ry, p.try_, 0.12);
+    p.hx = lerp(p.hx, p.thx, 0.14);
+    p.hy = lerp(p.hy, p.thy, 0.14);
+
+    if (hero) {
+      write(hero, '--mx', scene.hero.x, '');
+      write(hero, '--my', scene.hero.y, '');
+      write(hero, '--hs', s.hs, '');
+      const spot = hero.querySelector('.spotlight');
+      if (spot) {
+        write(spot, '--sx', scene.hero.sx, '%');
+        write(spot, '--sy', scene.hero.sy, '%');
+        spot.classList.toggle('is-live', scene.hero.spot);
+      }
+    }
+    if (plateTilt) {
+      write(plateTilt, '--plate-rx', p.rx, 'deg');
+      write(plateTilt, '--plate-ry', p.ry, 'deg');
+      write(plateTilt, '--hx', p.hx, '%');
+      write(plateTilt, '--hy', p.hy, '%');
+    }
+    if (vault) {
+      write(vault, '--mx', scene.vault.x, '');
+      write(vault, '--my', scene.vault.y, '');
+      write(vault, '--vs', s.vs, '');
+      const spot = vault.querySelector('.spotlight');
+      if (spot) {
+        write(spot, '--sx', scene.vault.sx, '%');
+        write(spot, '--sy', scene.vault.sy, '%');
+        spot.classList.toggle('is-live', scene.vault.spot);
+      }
+    }
+    if (timeline) write(timeline, '--tl', s.tl, '');
+    if (progressTrack) write(progressTrack, '--rp', s.rp, '');
+
+    const drift =
+      Math.abs(scene.hero.x - scene.hero.tx) + Math.abs(scene.hero.y - scene.hero.ty) +
+      Math.abs(p.rx - p.trx) + Math.abs(p.ry - p.try_) +
+      Math.abs(s.hs - s.ths) + Math.abs(s.vs - s.tvs) + Math.abs(s.tl - s.ttl) + Math.abs(s.rp - s.trp);
+
+    settled = drift < 0.004 ? settled + 1 : 0;
+    if (settled > 30 || ++frames > 3600) {
+      raf = null;
+      frames = 0;
+      return;
+    }
+    raf = window.requestAnimationFrame(step);
+  };
+
+  const wake = () => {
+    if (raf === null) {
+      settled = 0;
+      raf = window.requestAnimationFrame(step);
+    }
+  };
+
+  window.addEventListener('pointermove', wake, { passive: true });
+  window.addEventListener('pointerdown', wake, { passive: true });
+  window.addEventListener('wheel', wake, { passive: true });
+  window.addEventListener('scroll', wake, { passive: true });
+  window.addEventListener('resize', wake);
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && raf !== null) {
+      window.cancelAnimationFrame(raf);
+      raf = null;
+    } else {
+      wake();
+    }
+  });
+  wake();
+})();
+</script>
+
+</body></html>
